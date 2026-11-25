@@ -1,75 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Everreach Login</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; background: #f8fafc; max-width: 420px; margin: 40px auto; }
-    input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
-    button, a.btn { display: block; text-align: center; text-decoration: none; width: 100%; padding: 14px; border: 0; border-radius: 10px; font-size: 16px; font-weight: bold; margin-top: 8px; cursor: pointer; box-sizing: border-box; }
-    .blue { background: #2563eb; color: #fff; }
-    .green { background: #16a34a; color: #fff; }
-    .grey { background: #e2e8f0; color: #111; }
-    #msg { margin-top: 14px; font-weight: bold; min-height: 22px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d1c">
+<title>EVERREACH | Welcome Back</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+font-family:Arial,Helvetica,sans-serif;
+min-height:100vh;
+background:radial-gradient(circle at top right,#29205c 0%,transparent 40%),#080d1c;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:22px;
+}
+.container{width:100%;max-width:440px}
+.logo{text-align:center;margin-bottom:28px}
+.logo-mark{
+width:58px;height:58px;border-radius:18px;
+background:linear-gradient(135deg,#7655ff,#20c5c5);
+display:flex;align-items:center;justify-content:center;
+font-size:27px;font-weight:900;margin:0 auto 14px;
+box-shadow:0 8px 35px #7655ff55;
+}
+.logo h1{font-size:27px;letter-spacing:3px}
+.logo p{font-size:12px;color:#9da8c4;margin-top:8px;letter-spacing:1px}
+.card{
+background:#111a2e;border:1px solid #293550;
+border-radius:23px;padding:32px 25px;
+box-shadow:0 25px 80px #0007;
+}
+.card h2{font-size:25px;margin-bottom:9px}
+.subtitle{font-size:14px;color:#9da8c4;margin-bottom:27px;line-height:1.6}
+.field{margin-bottom:19px}
+.field label{display:block;font-size:13px;color:#dce3f4;margin-bottom:9px}
+.field input{
+width:100%;padding:15px;
+border:1px solid #34415e;border-radius:11px;
+background:#0b1324;color:white;font-size:15px;outline:none;
+}
+.field input:focus{border-color:#8666ff;box-shadow:0 0 0 3px #8666ff22}
+.password-wrap{position:relative}
+.password-wrap input{padding-right:65px}
+.toggle{
+position:absolute;right:13px;top:50%;transform:translateY(-50%);
+background:none;border:0;color:#a99aff;cursor:pointer;font-size:12px;
+}
+.forgot{text-align:right;margin-top:-8px;margin-bottom:21px}
+.forgot a,.switch a{color:#a995ff;text-decoration:none;font-size:13px}
+.btn{
+width:100%;padding:15px;border:0;border-radius:11px;
+background:linear-gradient(100deg,#7655ff,#5140cf);
+color:white;font-size:15px;font-weight:700;cursor:pointer;
+}
+.btn:disabled{opacity:.6;cursor:wait}
+.divider{display:flex;align-items:center;gap:13px;color:#65718b;font-size:12px;margin:24px 0}
+.divider:before,.divider:after{content:"";height:1px;background:#303b53;flex:1}
+.switch{text-align:center;font-size:13px;color:#a5afc5;margin-top:23px}
+.message{display:none;padding:12px;border-radius:9px;font-size:13px;margin-bottom:16px;line-height:1.5}
+.error{background:#481d2a;color:#ffb8c5}
+.success{background:#123a32;color:#9af0ce}
+.footer{text-align:center;color:#69758f;font-size:11px;margin-top:23px;line-height:1.8}
+</style>
 </head>
+
 <body>
-  <h2>Welcome Back - Everreach</h2>
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button class="blue" onclick="login()">Sign In</button>
-  <button class="green" onclick="signup()">Create Account</button>
-  <button class="grey" onclick="guest()">Continue as Eliphas (Owner)</button>
-  <p id="msg"></p>
+<main class="container">
 
-  <script>
-    const saved = localStorage.getItem("everreach_last_email");
-    if (saved) document.getElementById("email").value = saved;
+<div class="logo">
+<div class="logo-mark">E</div>
+<h1>EVERREACH</h1>
+<p>ONE WORLD. ENDLESS OPPORTUNITIES.</p>
+</div>
 
-    function showMsg(html, ok) {
-      const el = document.getElementById("msg");
-      el.style.color = ok ? "#16a34a" : "#dc2626";
-      el.innerHTML = html;
+<section class="card">
+<h2 id="heading">Welcome Back</h2>
+<p class="subtitle" id="description">Sign in to continue your journey with EVERREACH.</p>
+
+<div id="message" class="message"></div>
+
+<form id="authForm">
+
+<div class="field">
+<label for="email">Email Address</label>
+<input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+</div>
+
+<div class="field">
+<label for="password">Password</label>
+<div class="password-wrap">
+<input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required minlength="8">
+<button class="toggle" type="button" id="togglePassword">SHOW</button>
+</div>
+</div>
+
+<div class="forgot" id="forgot">
+<a href="#" id="forgotLink">Forgot password?</a>
+</div>
+
+<button class="btn" id="submitBtn" type="submit">Sign In</button>
+</form>
+
+<div class="divider">SECURE ACCESS</div>
+
+<div class="switch">
+<span id="switchText">New to EVERREACH?</span>
+<a href="#" id="switchLink">Create Account</a>
+</div>
+</section>
+
+<div class="footer">
+EVERREACH TECHNOLOGIES<br>
+Play. Learn. Earn. Connect. Grow.<br>
+© 2026 EVERREACH. All rights reserved.
+</div>
+
+</main>
+
+<script>
+let mode = "login";
+
+const form = document.getElementById("authForm");
+const password = document.getElementById("password");
+const message = document.getElementById("message");
+
+function notify(text,type){
+message.textContent=text;
+message.className="message "+type;
+message.style.display="block";
+}
+
+document.getElementById("togglePassword").onclick=()=>{
+const visible=password.type==="password";
+password.type=visible?"text":"password";
+document.getElementById("togglePassword").textContent=visible?"HIDE":"SHOW";
+};
+
+document.getElementById("switchLink").onclick=(event)=>{
+event.preventDefault();
+mode=mode==="login"?"signup":"login";
+
+document.getElementById("heading").textContent=
+mode==="login"?"Welcome Back":"Create Your Account";
+
+document.getElementById("description").textContent=
+mode==="login"?"Sign in to continue your journey with EVERREACH.":"Join EVERREACH and explore endless opportunities.";
+
+document.getElementById("submitBtn").textContent=
+mode==="login"?"Sign In":"Create Account";
+
+document.getElementById("switchText").textContent=
+mode==="login"?"New to EVERREACH?":"Already have an account?";
+
+document.getElementById("switchLink").textContent=
+mode==="login"?"Create Account":"Sign In";
+
+document.getElementById("forgot").style.display=
+mode==="login"?"block":"none";
+
+password.value="";
+password.autocomplete=mode==="login"?"current-password":"new-password";
+message.style.display="none";
+};
+
+document.getElementById("forgotLink").onclick=(event)=>{
+event.preventDefault();
+notify("Password recovery will be connected to the secure authentication service in the next step.","error");
+};
+
+form.addEventListener("submit",async(event)=>{
+event.preventDefault();
+
+const button=document.getElementById("submitBtn");
+const email=document.getElementById("email").value.trim();
+const pass=password.value;
+
+button.disabled=true;
+button.textContent="Please wait...";
+
+try{
+    const endpoint=mode==="login"?"/api/login":"/api/signup";
+
+    const response=await fetch(endpoint,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        credentials:"same-origin",
+        body:JSON.stringify({email,password:pass})
+    });
+
+    const result=await response.json();
+
+    if(!response.ok){
+        notify(result.error || "Authentication failed.","error");
+    }else if(mode==="signup"){
+        notify("Account created successfully. You can now sign in.","success");
+        mode="login";
+        document.getElementById("heading").textContent="Welcome Back";
+        document.getElementById("description").textContent="Sign in to continue your journey with EVERREACH.";
+        document.getElementById("submitBtn").textContent="Sign In";
+        document.getElementById("switchText").textContent="New to EVERREACH?";
+        document.getElementById("switchLink").textContent="Create Account";
+        document.getElementById("forgot").style.display="block";
+        password.value="";
+    }else{
+        notify("Login successful. Opening your dashboard...","success");
+        window.location.href="/dashboard.html";
     }
-
-    function getU() {
-      try { return JSON.parse(localStorage.getItem("everreach_users") || "{}"); }
-      catch (e) { return {}; }
-    }
-
-    function enterApp(email, displayName) {
-      const name = displayName || email.split("@")[0];
-      localStorage.removeItem("everreach_logged_out");
-      localStorage.setItem("everreach_session", JSON.stringify({ email: email, name: name, role: "owner" }));
-      if (email.indexOf("@") !== -1) localStorage.setItem("everreach_last_email", email);
-      showMsg("Welcome " + name + "! <a href=\"index.html\">Tap here to open Dashboard →</a>", true);
-      window.location.href = "index.html";
-    }
-
-    function signup() {
-      const e = document.getElementById("email").value.trim().toLowerCase();
-      const p = document.getElementById("password").value;
-      if (!e || !p) return showMsg("Enter both email and password.");
-      const u = getU();
-      u[e] = p;
-      localStorage.setItem("everreach_users", JSON.stringify(u));
-      enterApp(e);
-    }
-
-    function login() {
-      const e = document.getElementById("email").value.trim().toLowerCase();
-      const p = document.getElementById("password").value;
-      if (!e || !p) return showMsg("Enter both email and password.");
-      const u = getU();
-      if (u[e] && u[e] === p) enterApp(e);
-      else if (!u[e]) showMsg("No account found. Tap Create Account first.");
-      else showMsg("Wrong password.");
-    }
-
-    function guest() {
-      enterApp("eliphas@everreach.app", "Eliphas Mutwiri");
-    }
-  </script>
+}catch(error){
+    notify("Cannot reach the server. Make sure the backend is running.","error");
+}finally{
+    button.disabled=false;
+    if(mode==="login") button.textContent="Sign In";
+    else button.textContent="Create Account";
+}
+});
+</script>
 </body>
 </html>

@@ -1,14 +1,14 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
+
+import { defineConfig } from "vite";
 
 export default defineConfig({
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html'),
-        login: resolve(__dirname, 'login.html'),
-        profile: resolve(__dirname, 'profile.html')
-      }
+    server: {
+        host: "0.0.0.0",
+        proxy: {
+            "/api": {
+                target: "http://127.0.0.1:3000",
+                changeOrigin: true
+            }
+        }
     }
-  }
 });
