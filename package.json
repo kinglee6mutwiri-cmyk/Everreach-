@@ -1,0 +1,23 @@
+{
+  "name": "everreach",
+  "version": "1.0.0",
+  "description": "EVERREACH TECHNOLOGIES One World. Endless Opportunities.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "type": "module",
+  "devDependencies": {
+    "vite": "^8.3.8"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}

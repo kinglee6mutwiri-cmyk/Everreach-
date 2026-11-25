@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVERREACH Super App</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e3a8a">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #eef2ff; color: #111; padding-bottom: 90px; }
+    .header { background: linear-gradient(180deg, #1e3a8a, #2563eb); color: white; padding: 18px 16px 20px; border-radius: 0 0 24px 24px; }
+    .top { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 22px; font-weight: 900; line-height: 1.1; cursor: pointer; }
+    .logo span { color: #facc15; }
+    .bell { background: white; color: #111; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; position: relative; cursor: pointer; }
+    .bell b { position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; font-size: 11px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .profile { display: flex; align-items: center; gap: 12px; margin-top: 18px; cursor: pointer; }
+    .avatar { width: 58px; height: 58px; border-radius: 50%; background: #facc15; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #1e3a8a; border: 3px solid white; }
+    .wallet { background: linear-gradient(90deg, #f59e0b, #f97316, #3b82f6); color: white; border-radius: 16px; padding: 16px; margin: 14px 16px 0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .wallet h2 { margin: 4px 0 0; font-size: 28px; }
+    h3 { padding: 0 16px; margin: 18px 0 10px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 0 16px; }
+    .card { border-radius: 16px; padding: 18px 8px; text-align: center; color: white; cursor: pointer; transition: transform 0.1s; }
+    .card:active { transform: scale(0.96); }
+    .card b { display: block; font-size: 14px; }
+    .card small { font-size: 11px; opacity: 0.9; }
+    .icon { width: 44px; height: 44px; background: rgba(255,255,255,0.25); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; margin: 0 auto 8px; }
+    .c1 { background: #a855f7; } .c2 { background: #2563eb; } .c3 { background: #22c55e; }
+    .c4 { background: #f59e0b; } .c5 { background: #ec4899; } .c6 { background: #8b5cf6; }
+    .c7 { background: #06b6d4; } .c8 { background: #1e40af; }
+    .invite { background: linear-gradient(90deg, #7c3aed, #db2777); color: white; margin: 18px 16px; padding: 16px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .invite h3 { padding: 0; margin: 0; }
+    .invite p { margin: 4px 0 0; color: #facc15; font-weight: 700; font-size: 13px; }
+    .bottom { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.97); display: flex; justify-content: space-around; padding: 13px 0 16px; border-top: 1px solid #e2e8f0; z-index: 999; }
+    .bottom a { text-decoration: none; color: #64748b; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+    .bottom a.active { color: #2563eb; font-weight: 800; }
+    .logout { margin: 16px; background: #dc2626; color: white; border: none; padding: 12px 28px; border-radius: 999px; font-weight: 800; font-size: 13px; cursor: pointer; }
+    /* Invite Sheet */
+    #inviteOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; display: none; }
+    #inviteSheet { position: fixed; left: 0; right: 0; bottom: 0; background: #fff; border-radius: 22px 22px 0 0; padding: 18px 16px 26px; z-index: 10000; display: none; max-width: 480px; margin: 0 auto; }
+    .invite-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .invite-btn { border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px 6px; text-align: center; cursor: pointer; font-weight: 700; font-size: 13px; }
+    .invite-close { width: 100%; margin-top: 14px; padding: 12px; border: none; border-radius: 12px; background: #f1f5f9; font-weight: 700; cursor: pointer; }
+  </style>
+  <script src="earnings.js"></script>
+</head>
+<body>
+  <div id="homeScreen">
+    <div class="header">
+      <div class="top">
+        <div class="logo" onclick="location.href='profile.html'"><span>EVERREACH</span><br>Super App</div>
+        <div class="bell" onclick="alert('3 new notifications in EVERREACH!')">!<b>3</b></div>
+      </div>
+      <div class="profile" onclick="location.href='profile.html'">
+        <div class="avatar" id="avatar">E</div>
+        <div>
+          <div id="hello" style="font-size:19px;font-weight:800">Hello, Eliphas Mutwiri</div>
+          <div style="opacity:.85;font-size:14px">Dream Bigger, Earn More</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wallet" onclick="location.href='profile.html'">
+      <div>
+        <small>My Wallet</small>
+        <h2 id="bal"><span id="balanceAmount">KSh 0.00</span></h2>
+      </div>
+      <div style="font-size:28px;font-weight:900">↑</div>
+    </div>
+
+    <h3>Explore Our Services</h3>
+    <div class="grid">
+      <div class="card c1" onclick="openModule('Games')"><div class="icon">G</div><b>Games</b><small>Play & Win</small></div>
+      <div class="card c2" onclick="openModule('Paid Surveys')"><div class="icon">S</div><b>Paid Surveys</b><small>Earn Money</small></div>
+      <div class="card c3" onclick="openModule('Learn')"><div class="icon">L</div><b>Learn</b><small>Skills</small></div>
+      <div class="card c4" onclick="openModule('Articles')"><div class="icon">A</div><b>Articles</b><small>Read & Learn</small></div>
+      <div class="card c5" onclick="openModule('Marketplace')"><div class="icon">M</div><b>Marketplace</b><small>Buy & Sell</small></div>
+      <div class="card c6" onclick="openModule('Entertainment')"><div class="icon">E</div><b>Entertainment</b><small>Watch & Earn</small></div>
+      <div class="card c7" onclick="openModule('Tasks')"><div class="icon">T</div><b>Tasks</b><small>Opportunities</small></div>
+      <div class="card c8" onclick="openModule('Community')"><div class="icon">C</div><b>Community</b><small>Connect</small></div>
+    </div>
+
+    <div class="invite" onclick="openInviteSheet()">
+      <div>
+        <h3>Invite Friends</h3>
+        <p>Invite your friends to join EVERREACH</p>
+      </div>
+      <div style="font-size:24px;font-weight:900">&gt;</div>
+    </div>
+
+    <p style="text-align:center;color:#6b7280;font-weight:600;cursor:pointer" onclick="location.href='profile.html'">EVERREACH TECHNOLOGIES</p>
+    <div style="text-align:center">
+      <button class="logout" onclick="doLogout()">LOGOUT</button>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <a class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})">Home</a>
+    <a onclick="document.querySelector('.grid').scrollIntoView({behavior:'smooth'})">Explore</a>
+    <a href="profile.html">Wallet</a>
+    <a onclick="openInviteSheet()">Social</a>
+    <a href="profile.html">Profile</a>
+  </div>
+
+  <div id="inviteOverlay" onclick="closeInviteSheet()"></div>
+  <div id="inviteSheet">
+    <h3 style="text-align:center;margin:0">Invite Friends</h3>
+    <p style="text-align:center;color:#64748b;font-size:13px">Share your link: <b>https://everreach.app</b></p>
+    <div class="invite-grid">
+      <div class="invite-btn" onclick="window.open('https://wa.me' + encodeURIComponent('Join me on EVERREACH Super App! https://everreach.app'), '_blank')">WhatsApp</div>
+      <div class="invite-btn" onclick="navigator.clipboard && navigator.clipboard.writeText('https://everreach.app'); alert('Invite link copied!');">Copy Link</div>
+    </div>
+    <button class="invite-close" onclick="closeInviteSheet()">Close</button>
+  </div>
+
+  <script>
+    // 1. Session & Owner Access Control
+    (function initSession() {
+      let s = null;
+      try { s = JSON.parse(localStorage.getItem('everreach_session') || 'null'); } catch (e) {}
+      if (!s && localStorage.getItem('everreach_logged_out') === '1') {
+        window.location.replace('login.html');
+        return;
+      }
+      if (!s) {
+        s = { email: 'eliphas@everreach.app', name: 'Eliphas Mutwiri', role: 'owner' };
+        localStorage.setItem('everreach_session', JSON.stringify(s));
+      }
+      const raw = Array.isArray(s.name) ? s.name[0] : String(s.name || "Eliphas Mutwiri"); const displayName = raw.split(",")[0].split("@")[0]; s.name = displayName; localStorage.setItem("everreach_session", JSON.stringify(s));
+      document.getElementById('hello').textContent = 'Hello, ' + displayName;
+      document.getElementById('avatar').textContent = displayName.charAt(0).toUpperCase();
+    })();
+
+    // 2. Refresh Wallet Balance
+    function refreshHomeWallet() {
+      let bal = 0;
+      try {
+        bal = JSON.parse(localStorage.getItem('everreach_earnings') || '[]').reduce((sum, x) => sum + (Number(x.amount) || 0), 0);
+      } catch (e) { bal = 0; }
+      const el = document.getElementById('balanceAmount');
+      if (el) el.textContent = 'KSh ' + bal.toLocaleString('en-KE') + '.00';
+    }
+    refreshHomeWallet();
+
+    // 3. Logout Control
+    function doLogout() {
+      localStorage.setItem('everreach_logged_out', '1');
+      localStorage.removeItem('everreach_session');
+      window.location.replace('login.html');
+    }
+
+    // 4. Service Module Access
+    function openModule(name) {
+      alert('EVERREACH Owner Access: ' + name + ' module opened.');
+    }
+
+    // 5. Invite Sheet Controls
+    function openInviteSheet() {
+      document.getElementById('inviteOverlay').style.display = 'block';
+      document.getElementById('inviteSheet').style.display = 'block';
+    }
+    function closeInviteSheet() {
+
+      document.getElementById('inviteOverlay').style.display = 'none';
+      document.getElementById('inviteSheet').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

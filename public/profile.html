@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profile - Withdraw | EverReach</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:#0f172a;color:#0f172a;padding-bottom:80px;min-height:100vh}
+/* BACKGROUND IMAGE - Nairobi skyline, dark professional */
+.bg{position:fixed;inset:0;z-index:-2;background:url('https://images.unsplash.com/photo-1611348524140-53c9a25263d6?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat}
+.bg-overlay{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(15,23,42,0.82) 0%,rgba(15,23,42,0.92) 55%,#f1f5f9 100%)}
+.wrap{max-width:480px;margin:0 auto;padding:12px 12px 6px}
+.top{display:flex;justify-content:space-between;align-items:center;color:#fff;margin:6px 0 18px}
+.logo{font-weight:800;font-size:19px;letter-spacing:-0.3px}
+.logo span{color:#4ade80}
+.badge{background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:12px;font-weight:600;padding:6px 10px;border-radius:999px;backdrop-filter:blur(8px)}
+h1{color:#fff;font-size:22px;line-height:1.1;margin:18px 0 6px;letter-spacing:-0.6px}
+.sub{color:#cbd5e1;font-size:14px;margin:0 0 18px}
+label{font-size:12.5px;font-weight:600;color:#334155;letter-spacing:0.2px}
+input,select{width:100%;padding:10px 11px;border:1px solid #e2e8f0;border-radius:12px;margin:7px 0 12px;font-size:15px;background:#f8fafc;outline:none;transition:0.15s}
+input:focus,select:focus{border-color:#2563eb;background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,0.12)}
+select{background:#fff;color:#0f172a;font-weight:500}
+.country-card{background:rgba(255,255,255,0.96);border-radius:13px;padding:11px;box-shadow:0 12px 32px rgba(0,0,0,0.18);margin-bottom:10px}
+.balance{background:linear-gradient(135deg,#1e40af 0%,#2563eb 55%,#0ea5e9 100%);color:#fff;border-radius:14px;padding:14px;position:relative;overflow:hidden;margin-bottom:10px;box-shadow:0 16px 32px rgba(37,99,235,0.35)}
+.balance:before{content:"";position:absolute;right:-30px;top:-30px;width:150px;height:150px;background:rgba(255,255,255,0.12);border-radius:50%}
+.balance:after{content:"";position:absolute;right:30px;bottom:-40px;width:110px;height:110px;background:rgba(255,255,255,0.08);border-radius:50%}
+.balance small{font-size:12px;opacity:0.85;letter-spacing:0.4px;text-transform:uppercase}
+.balance .amt{font-size:26px;font-weight:800;margin:6px 0 4px;letter-spacing:-0.8px}
+.balance .meta{font-size:12.5px;opacity:0.9;display:flex;gap:8px;align-items:center}
+.dot{width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block}
+.card{background:#fff;border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 10px 28px rgba(15,23,42,0.08);border:1px solid #eef2f7}
+.card.mpesa{border-top:4px solid #16a34a}
+.card.world{border-top:4px solid #2563eb}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start}
+.card-title{font-size:15px;font-weight:800;letter-spacing:-0.2px}
+.pill{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;letter-spacing:0.3px}
+.pill-green{background:#dcfce7;color:#15803d}
+.pill-blue{background:#dbeafe;color:#1d4ed8}
+.card-desc{color:#64748b;font-size:13.5px;line-height:1.5;margin:8px 0 14px}
+.btn{width:100%;border:none;padding:11px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;color:#fff;letter-spacing:0.1px}
+.btn-green{background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 8px 18px rgba(34,197,94,0.35)}
+.btn-blue{background:linear-gradient(135deg,#1d4ed8,#2563eb);box-shadow:0 8px 18px rgba(37,99,235,0.35)}
+.btn:active{transform:scale(0.98)}
+.fee{font-size:12px;color:#64748b;margin-top:10px;display:flex;justify-content:space-between}
+.fee b{color:#0f172a}
+.hint{font-size:12px;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;padding:9px 11px;border-radius:10px;margin:-4px 0 12px;display:none}
+.secure{ text-align:center;color:#64748b;font-size:12px;margin:6px 0 0;display:flex;justify-content:center;gap:16px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(10px);display:flex;justify-content:space-around;padding:13px 0 16px;border-top:1px solid #e2e8f0;z-index:9999}
+.bottom div{cursor:pointer;font-size:12.5px;color:#64748b;font-weight:500}
+.bottom .active{color:#2563eb;font-weight:800}
+
+.compact-card{padding:11px !important}
+.small-text{font-size:12.5px !important;line-height:1.4 !important}
+.txn-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.txn-row:last-child{border-bottom:none}
+.txn-left b{font-size:13px}
+.txn-left small{color:#64748b;font-size:11px;display:block}
+.txn-amt{font-weight:700;font-size:13px;text-align:right}
+.txn-amt small{display:block;font-size:11px;font-weight:600}
+.btn-small{padding:7px 10px;font-size:12px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;font-weight:600}
+.btn-small-green{background:#dcfce7;color:#15803d;border-color:#bbf7d0}
+.btn-small-blue{background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe}
+</style>
+<script src="earnings.js"></script>
+</head>
+<body>
+<button onclick="window.location.href='index.html'" aria-label="Close" style="position:fixed;top:14px;right:14px;z-index:99999;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,0.18);color:#fff;font-size:18px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">✕</button>
+<div class="bg"></div><div class="bg-overlay"></div>
+<div class="wrap">
+<div class="top"><div class="logo">Ever<span>Reach</span></div><div class="badge">Verified Account</div></div>
+<h1>Withdraw<br>Money</h1>
+<p class="sub">Fast, secure payouts to Kenya and worldwide.</p>
+
+<div class="country-card">
+<label>YOUR COUNTRY</label>
+<select id="countrySelect" onchange="changeCountry()">
+<option value="KE">Kenya - M-Pesa</option>
+<option value="US">United States - Card</option>
+<option value="GB">United Kingdom - Card</option>
+<option value="NG">Nigeria - Card</option>
+<option value="IN">India - Card</option>
+<option value="OTHER">Other Country - Card</option>
+</select>
+</div>
+
+<div class="balance">
+<small>Available Balance</small>
+<div class="amt" id="balanceAmount">KSh 0.00</div>
+<div class="meta"><span class="dot"></span> EverReach Wallet &nbsp;|&nbsp; No earnings yet - Start earning to withdraw</div>
+</div>
+<div id="start-earning" style="background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:10px 11px;font-size:13px;color:#92400e;margin-bottom:10px;line-height:1.5"><b>No earnings yet.</b> Your balance is KSh 0.00. Complete tasks, watch ads or invite friends to earn. Minimum withdrawal is KSh 1,000.</div>
+
+
+<!-- EARN BY WORKING - REAL WORK ONLY -->
+<div class="card">
+<div class="card-title">Earn by Working</div>
+<p class="card-desc">You only earn when you complete work. No free money. Pay is based on what the partner company pays us.</p>
+<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:14px"><span>Watch Ads Full</span><span style="color:#64748b;font-size:12px">Partner Rate</span></div>
+<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:14px"><span>Complete Task</span><span style="color:#64748b;font-size:12px">Partner Rate</span></div>
+<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:14px"><span>Survey</span><span style="color:#64748b;font-size:12px">Partner Rate</span></div>
+<div style="display:flex;justify-content:space-between;padding:10px 0;font-size:14px"><span>Invite Friend Who Works</span><span style="color:#64748b;font-size:12px">Partner Rate</span></div>
+<button class="btn btn-blue" style="margin-top:10px" onclick="window.location.href='index.html'">Go to Work - Tasks</button>
+<div style="font-size:12px;color:#64748b;margin-top:10px;text-align:center">Pay is set by the partner company. No work = KSh 0.</div>
+</div>
+
+<!-- M-PESA -->
+<div id="mpesaBox" class="card mpesa">
+<div class="card-head"><div class="card-title">M-Pesa</div><span class="pill pill-green">KENYA &bull; INSTANT</span></div>
+<p class="card-desc">Withdraw directly to your Safaricom M-Pesa number. You will receive an STK push to confirm with your PIN.</p>
+<label>M-PESA NUMBER</label>
+<input id="mpesaNumber" placeholder="0712 345 678" inputmode="numeric">
+<label>AMOUNT (KSh)</label>
+<input id="mpesaAmount" type="number" placeholder="Minimum 1,000" min="1000">
+<div id="mpesaHint" class="hint">Minimum withdrawal is KSh 1,000</div>
+<button class="btn btn-green" onclick="withdrawMpesa()">Withdraw via M-Pesa</button>
+<div class="fee"><span>Fee <b>KSh 0</b></span><span>Min <b>KSh 1,000</b></span><span>Time <b>Instant</b></span></div>
+</div>
+
+<!-- CARD -->
+<div id="cardBox" class="card world">
+<div class="card-head"><div class="card-title">Debit Card</div><span class="pill pill-blue">WORLDWIDE &bull; VISA / MASTERCARD</span></div>
+<p class="card-desc">For users outside Kenya. Withdraw to any Visa or Mastercard debit card worldwide.</p>
+<label>CARD NUMBER</label>
+<input id="cardNumber" placeholder="4242 4242 4242 4242" inputmode="numeric">
+<label>AMOUNT (USD)</label>
+<input id="cardAmount" type="number" placeholder="Minimum $8" min="8">
+<div id="cardHint" class="hint">Minimum withdrawal is $8 (approx. KSh 1,000)</div>
+<button class="btn btn-blue" onclick="withdrawCard()">Withdraw to Card</button>
+<div class="fee"><span>Fee <b>2.5%</b></span><span>Min <b>$8</b></span><span>Time <b>1 - 3 days</b></span></div>
+</div>
+
+
+<!-- TRANSACTIONS + RECEIPTS - COMPACT -->
+<div class="card compact-card">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div class="card-title">Transactions</div>
+<span style="font-size:11px;color:#64748b" id="txnCount">0 records</span>
+</div>
+<p class="card-desc small-text" style="margin:4px 0 8px">All your earnings and withdrawals. Download receipt for any paid withdrawal.</p>
+<div id="txnList">
+<div style="text-align:center;color:#94a3b8;font-size:12.5px;padding:12px 0">No transactions yet.<br>Complete work to see earnings here.</div>
+</div>
+<button class="btn btn-blue" style="margin-top:8px;padding:11px;font-size:13px" onclick="downloadAllReceipts()">Download All Receipts</button>
+</div>
+
+<div class="secure"><span>256-bit Secure</span><span>Licensed Payouts</span><span>24/7 Support</span></div>
+</div>
+
+
+<div class="bottom" style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);display:flex;justify-content:space-around;padding:13px 0 16px;border-top:1px solid #e2e8f0;z-index:9999">
+  <a href="index.html" style="text-decoration:none;color:#64748b;font-size:12.5px;font-weight:500">Home</a>
+  <a href="index.html" style="text-decoration:none;color:#64748b;font-size:12.5px;font-weight:500">Explore</a>
+  <a href="index.html" style="text-decoration:none;color:#64748b;font-size:12.5px;font-weight:500">Wallet</a>
+  <a href="index.html" style="text-decoration:none;color:#64748b;font-size:12.5px;font-weight:500">Social</a>
+  <a href="profile.html" style="text-decoration:none;color:#2563eb;font-size:12.5px;font-weight:800">Profile</a>
+</div>
+<script>
+let BALANCE = 0; // Overwritten by earnings.js from real work
+function changeCountry(){
+  var c=document.getElementById('countrySelect').value;
+  var mpesa=document.getElementById('mpesaBox');
+  if(c==='KE'){ mpesa.style.display='block'; } else { mpesa.style.display='none'; }
+}
+async function withdrawMpesa(){
+  var n=document.getElementById('mpesaNumber').value.trim();
+  var a=Number(document.getElementById('mpesaAmount').value);
+  var hint=document.getElementById('mpesaHint');
+  if(BALANCE <= 0){ alert('Your balance is KSh 0.00 - You have not earned yet. Complete tasks to start earning.'); return; }
+  if(!n){ alert('Please enter your M-Pesa number'); return; }
+  if(!a || a < 1000){ hint.style.display='block'; alert('Minimum withdrawal is KSh 1,000'); return; }
+  if(a > BALANCE){ alert('You only earned KSh ' + BALANCE + '. You cannot withdraw more than you earned.'); return; }
+  hint.style.display='none';
+  if(n.startsWith('0')) n='254'+n.slice(1);
+  n=n.replace(/\s/g,'');
+  var res=await fetch('/api/mpesa/withdraw',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:n,amount:a})});
+  var data=await res.json();
+  alert('STK Push sent to '+n+' - Enter your M-Pesa PIN to confirm KSh '+a);
+  saveTransaction('Withdrawal','M-Pesa',a,n);
+}
+function withdrawCard(){
+  var c=document.getElementById('cardNumber').value.trim();
+  var a=Number(document.getElementById('cardAmount').value);
+  var hint=document.getElementById('cardHint');
+  if(BALANCE <= 0){ alert('Your balance is $0.00 - You have not earned yet. Complete tasks to start earning.'); return; }
+  if(!c){ alert('Please enter your card number'); return; }
+  if(!a || a < 8){ hint.style.display='block'; alert('Minimum withdrawal is $8 (approx. KSh 1,000)'); return; }
+  let maxUSD = Math.floor(BALANCE / 129);
+  if(a > maxUSD){ alert('You only earned KSh ' + BALANCE + ' (~$' + maxUSD + '). You cannot withdraw more than you earned.'); return; }
+  hint.style.display='none';
+  alert('Card withdrawal $'+a+' to card ending '+c.slice(-4)+' - Processing in 1-3 business days.');
+  saveTransaction('Withdrawal','Card',a,'Card ****'+c.slice(-4));
+}
+</script>
+
+<script>
+function saveTransaction(type, method, amount, dest){
+  let list = JSON.parse(localStorage.getItem('everreach_transactions')||'[]');
+  let id = 'EVR' + Date.now().toString().slice(-8);
+  let tx = {id, type, method, amount, dest, status:'Paid', time:new Date().toLocaleString('en-KE')};
+  list.unshift(tx);
+  localStorage.setItem('everreach_transactions', JSON.stringify(list));
+  renderTransactions();
+  return tx;
+}
+function renderTransactions(){
+  let list = JSON.parse(localStorage.getItem('everreach_transactions')||'[]');
+  // Also show earnings as transactions
+  let earns = JSON.parse(localStorage.getItem('everreach_earnings')||'[]');
+  let el = document.getElementById('txnList');
+  let cnt = document.getElementById('txnCount');
+  if(!el) return;
+  if(list.length===0 && earns.length===0){
+    el.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:12.5px;padding:12px 0">No transactions yet.<br>Complete work to see earnings here.</div>';
+    if(cnt) cnt.textContent = '0 records';
+    return;
+  }
+  let html = '';
+  // Withdrawals first
+  list.forEach(tx=>{
+    html += `<div class="txn-row"><div class="txn-left"><b>${tx.method} - ${tx.type}</b><small>${tx.time} | ${tx.id}</small></div><div class="txn-amt">KSh ${tx.amount}<small style="color:#16a34a">Paid</small></div><button class="btn-small btn-small-green" onclick="downloadReceipt('${tx.id}')">Receipt</button></div>`;
+  });
+  // Earnings
+  earns.slice().reverse().forEach(e=>{
+    html += `<div class="txn-row"><div class="txn-left"><b>Earned - ${e.type}</b><small>${e.time ? new Date(e.time).toLocaleString('en-KE') : ''} | ${e.proof}</small></div><div class="txn-amt">+KSh ${e.amount}<small style="color:#2563eb">Earned</small></div><button class="btn-small" onclick="alert('Earning proof: ${e.proof}')">Proof</button></div>`;
+  });
+  el.innerHTML = html;
+  if(cnt) cnt.textContent = (list.length + earns.length) + ' records';
+}
+function downloadReceipt(id){
+  let list = JSON.parse(localStorage.getItem('everreach_transactions')||'[]');
+  let tx = list.find(x=>x.id===id);
+  if(!tx){ alert('Receipt not found'); return; }
+  let text = `EVERREACH - PAYMENT RECEIPT\n--------------------------------\nReceipt ID: ${tx.id}\nDate: ${tx.time}\nType: ${tx.type}\nMethod: ${tx.method}\nAmount: KSh ${tx.amount}\nTo: ${tx.dest}\nStatus: ${tx.status}\n--------------------------------\nThank you for using EverReach.\nSupport: support@everreach.app\n`;
+  let blob = new Blob([text], {type:'text/plain'});
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'EverReach-Receipt-' + tx.id + '.txt';
+  a.click();
+}
+function downloadAllReceipts(){
+  let list = JSON.parse(localStorage.getItem('everreach_transactions')||'[]');
+  if(list.length===0){ alert('No paid transactions yet to download receipt for.'); return; }
+  let text = 'EVERREACH - ALL RECEIPTS\n============================\n';
+  list.forEach(tx=>{ text += `ID: ${tx.id} | ${tx.time} | ${tx.method} | KSh ${tx.amount} | ${tx.status} | To: ${tx.dest}\n`; });
+  let blob = new Blob([text], {type:'text/plain'});
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'EverReach-All-Receipts.txt';
+  a.click();
+}
+document.addEventListener('DOMContentLoaded', renderTransactions);
+</script>
+
+
+<script>
+function doLogout(){ if(!confirm('Are you sure you want to logout from EVERREACH?')) return; localStorage.removeItem('everreach_session'); localStorage.removeItem('everreach_loggedIn'); sessionStorage.clear(); window.location.replace('login.html'); } else {
+    window.location.href = 'login.html';
+  }
+  // Fallback: if login.html does not exist, stay on home and show logged out
+  setTimeout(()=>{
+    if(window.location.pathname.includes('login.html')){
+      // login.html missing, go back to home
+      fetch('login.html').then(r=>{ if(!r.ok) window.location.href='index.html'; }).catch(()=>{ window.location.href='index.html'; });
+    }
+  }, 500);
+}
+</script>
+
+</body>
+</html>

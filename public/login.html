@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Everreach Login</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f8fafc; max-width: 420px; margin: 40px auto; }
+    input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+    button, a.btn { display: block; text-align: center; text-decoration: none; width: 100%; padding: 14px; border: 0; border-radius: 10px; font-size: 16px; font-weight: bold; margin-top: 8px; cursor: pointer; box-sizing: border-box; }
+    .blue { background: #2563eb; color: #fff; }
+    .green { background: #16a34a; color: #fff; }
+    .grey { background: #e2e8f0; color: #111; }
+    #msg { margin-top: 14px; font-weight: bold; min-height: 22px; }
+  </style>
+</head>
+<body>
+  <h2>Welcome Back - Everreach</h2>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button class="blue" onclick="login()">Sign In</button>
+  <button class="green" onclick="signup()">Create Account</button>
+  <button class="grey" onclick="guest()">Continue as Eliphas (Owner)</button>
+  <p id="msg"></p>
+
+  <script>
+    const saved = localStorage.getItem("everreach_last_email");
+    if (saved) document.getElementById("email").value = saved;
+
+    function showMsg(html, ok) {
+      const el = document.getElementById("msg");
+      el.style.color = ok ? "#16a34a" : "#dc2626";
+      el.innerHTML = html;
+    }
+
+    function getU() {
+      try { return JSON.parse(localStorage.getItem("everreach_users") || "{}"); }
+      catch (e) { return {}; }
+    }
+
+    function enterApp(email, displayName) {
+      const name = displayName || email.split("@")[0];
+      localStorage.removeItem("everreach_logged_out");
+      localStorage.setItem("everreach_session", JSON.stringify({ email: email, name: name, role: "owner" }));
+      if (email.indexOf("@") !== -1) localStorage.setItem("everreach_last_email", email);
+      showMsg("Welcome " + name + "! <a href=\"index.html\">Tap here to open Dashboard →</a>", true);
+      window.location.href = "index.html";
+    }
+
+    function signup() {
+      const e = document.getElementById("email").value.trim().toLowerCase();
+      const p = document.getElementById("password").value;
+      if (!e || !p) return showMsg("Enter both email and password.");
+      const u = getU();
+      u[e] = p;
+      localStorage.setItem("everreach_users", JSON.stringify(u));
+      enterApp(e);
+    }
+
+    function login() {
+      const e = document.getElementById("email").value.trim().toLowerCase();
+      const p = document.getElementById("password").value;
+      if (!e || !p) return showMsg("Enter both email and password.");
+      const u = getU();
+      if (u[e] && u[e] === p) enterApp(e);
+      else if (!u[e]) showMsg("No account found. Tap Create Account first.");
+      else showMsg("Wrong password.");
+    }
+
+    function guest() {
+      enterApp("eliphas@everreach.app", "Eliphas Mutwiri");
+    }
+  </script>
+</body>
+</html>

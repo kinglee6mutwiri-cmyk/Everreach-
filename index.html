@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome Back - Everreach</title>
+  <style>
+    :root {
+      --bg-gradient-start: #f0f4ff;
+      --bg-gradient-end: #e6e9f8;
+      --card-bg: #ffffff;
+      --text-main: #1e1b4b;
+      --text-muted: #64748b;
+      --input-bg: #f8fafc;
+      --input-border: #cbd5e1;
+      --input-focus: #6366f1;
+      --primary-btn: #4f46e5;
+      --primary-btn-hover: #4338ca;
+      --secondary-btn: #0d9488;
+      --secondary-btn-hover: #0f766e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      padding: 20px;
+    }
+
+    .login-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 32px;
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(30, 27, 75, 0.08);
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-badge {
+      display: inline-block;
+      background: #eef2ff;
+      color: var(--primary-btn);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      color: var(--text-main);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 15px;
+      color: var(--text-main);
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus {
+      background: #ffffff;
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+    }
+
+    input[type="password"],
+    input.password-field {
+      padding-right: 48px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 8px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .toggle-password:hover {
+      color: var(--primary-btn);
+      background: #eef2ff;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-btn);
+      color: #ffffff;
+      margin-top: 6px;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-btn-hover);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .divider span {
+      padding: 0 12px;
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary-btn);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--secondary-btn-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <main class="login-card">
+    <div class="brand-header">
+      <span class="brand-badge">Everreach</span>
+      <h1>Welcome Back</h1>
+      <p class="subtitle">Sign in to manage your account</p>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrapper">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="you@everreach.app"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <input
+            type="password"
+            id="password"
+            class="password-field"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            id="togglePassword"
+            aria-label="Show password"
+          >
+            <svg id="eyeOpen" xmlns="http://w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg id="eyeClosed" style="display: none;" xmlns="http://w3.org" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Sign In</button>
+    </form>
+
+    <div class="divider"><span>or</span></div>
+
+    <button type="button" class="btn btn-secondary" id="createAccountBtn">
+      Create Account
+    </button>
+  </main>
+
+  <script>
+    const togglePasswordBtn = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+    const eyeOpen = document.getElementById("eyeOpen");
+    const eyeClosed = document.getElementById("eyeClosed");
+
+    togglePasswordBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.getAttribute("type") === "password";
+      passwordInput.setAttribute("type", isPassword ? "text" : "password");
+
+      eyeOpen.style.display = isPassword ? "none" : "block";
+      eyeClosed.style.display = isPassword ? "block" : "none";
+      togglePasswordBtn.setAttribute(
+        "aria-label",
+        isPassword ? "Hide password" : "Show password"
+      );
+    });
+  </script>
+
+</body>
+</html>

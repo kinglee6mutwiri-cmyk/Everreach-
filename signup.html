@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Create Account</title>
+<style>body{margin:0;font-family:system-ui;background:linear-gradient(135deg,#7c3aed,#db2777,#f97316);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}.box{background:white;color:#111;padding:28px;border-radius:24px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.3)}input{width:100%;padding:14px;margin:8px 0;border-radius:12px;border:2px solid #e5e7eb;box-sizing:border-box;font-size:15px}button{width:100%;padding:14px;background:linear-gradient(90deg,#7c3aed,#db2777);border:none;border-radius:12px;color:white;font-weight:900;font-size:16px;cursor:pointer}a{color:#7c3aed;font-weight:700;text-decoration:none}.msg{font-size:13px;color:#dc2626;min-height:18px}</style></head>
+<body><div class="box"><h1>EVERREACH</h1><p style="color:#6b7280">Join the world. Play. Learn. Earn.</p><p id="msg" class="msg"></p>
+<input id="name" placeholder="Full Name"><input id="email" placeholder="Email or Phone"><input id="pass" type="password" placeholder="Create Password">
+<button onclick="signup()">CREATE ACCOUNT</button><p style="margin-top:14px"><a href="/login.html">Already have account? Login</a></p></div>
+<script>
+function signup(){
+try{
+let n=document.getElementById('name').value.trim();
+let e=document.getElementById('email').value.trim().toLowerCase();
+let p=document.getElementById('pass').value.trim();
+if(!n||!e||!p){document.getElementById('msg').innerText='Fill all fields';return}
+let users=[];try{users=JSON.parse(localStorage.getItem('everreach_users')||'[]')}catch(err){users=[]}
+if(users.find(u=>u.email===e)){document.getElementById('msg').innerText='You already have account! Going to Login...';setTimeout(()=>{window.location.href='/login.html'},800);return}
+users.push({name:n,email:e,pass:p});
+localStorage.setItem('everreach_users',JSON.stringify(users));
+localStorage.setItem('everreach_session',JSON.stringify({name:n,email:e}));
+localStorage.setItem('everreach_balance','0');
+window.location.href='/';
+}catch(err){document.getElementById('msg').innerText='Error: '+err.message}
+}
+</script></body></html>
