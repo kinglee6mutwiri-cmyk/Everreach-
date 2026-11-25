@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Everreach</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}body{min-height:100vh;background:linear-gradient(135deg,#f0f4ff,#e6e9f8);padding:20px;display:flex;align-items:center;justify-content:center}.card{background:#fff;width:100%;max-width:420px;padding:32px 28px;border-radius:20px;box-shadow:0 12px 32px rgba(30,27,75,.08)}.brand{text-align:center;margin-bottom:20px}.badge{display:inline-block;background:#eef2ff;color:#4f46e5;font-weight:700;font-size:13px;padding:6px 14px;border-radius:999px;margin-bottom:10px}h1{color:#1e1b4b;font-size:24px}.sub{color:#64748b;font-size:14px;margin-top:6px}.alert{display:none;padding:12px;border-radius:10px;font-size:14px;margin-bottom:14px;text-align:center}.err{background:#fef2f2;color:#dc2626}.ok{background:#f0fdf4;color:#16a34a}.group{margin-bottom:14px}.row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}label{font-size:13px;font-weight:600;color:#1e1b4b}.forgot{background:none;border:none;color:#4f46e5;font-size:13px;font-weight:600;cursor:pointer}.wrap{position:relative;display:flex;align-items:center}input{width:100%;padding:13px 16px;font-size:15px;background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:12px;outline:none}input:focus{border-color:#6366f1;background:#fff}.eye{position:absolute;right:10px;background:none;border:none;cursor:pointer;font-size:18px}.btn{width:100%;padding:14px;font-size:15px;font-weight:600;border:none;border-radius:12px;cursor:pointer}.primary{background:#4f46e5;color:#fff;margin-top:6px}.secondary{background:#0d9488;color:#fff}.divider{text-align:center;color:#64748b;margin:18px 0;font-size:13px}.dash{display:none}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.logout{padding:8px 14px;border:none;border-radius:999px;background:#fef2f2;color:#dc2626;font-weight:700;cursor:pointer}.balance{background:#4f46e5;color:#fff;padding:20px;border-radius:16px;margin-bottom:16px}.balance small{opacity:.8}.balance h2{font-size:28px;margin-top:4px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}.tile{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:16px;text-align:center;cursor:pointer}.tile b{display:block;color:#1e1b4b}.tile span{font-size:12px;color:#64748b}.list{background:#f8fafc;border-radius:14px;padding:14px}.list b{color:#1e1b4b;font-size:14px}.list p{color:#64748b;font-size:13px;margin-top:4px}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;z-index:10}.modal-box{background:#fff;width:100%;max-width:380px;padding:24px;border-radius:16px}.modal-box h2{font-size:20px;color:#1e1b4b;margin-bottom:8px}.modal-box p{font-size:14px;color:#64748b;margin-bottom:14px}</style>
+</head><body>
+<main class="card">
+<div id="authBox"><div class="brand"><span class="badge">EVERREACH</span><h1 id="title">Welcome Back</h1><p class="sub" id="sub">Sign in to manage your account</p></div><div id="alert" class="alert"></div><div class="group"><label>Email Address</label><input id="email" type="email" placeholder="you@everreach.app"></div><div class="group"><div class="row"><label id="passLabel">Password</label><button class="forgot" id="forgotLink">Forgot Password?</button></div><div class="wrap"><input id="password" type="password" placeholder="Enter your password" style="padding-right:48px"><button class="eye" id="eyeBtn">👁️</button></div></div><button class="btn primary" id="submitBtn">Sign In</button><div class="divider">or</div><button class="btn secondary" id="switchBtn">Create Account</button></div>
+<div id="dashBox" class="dash"><div class="top"><div><span class="badge">EVERREACH</span><br><b id="welcome">Welcome</b></div><button class="logout" id="logoutBtn">Sign Out</button></div><div class="balance"><small>Your Everreach Balance</small><h2>KSh 0.00</h2><small>Welcome to your app</small></div><div class="grid"><div class="tile"><b>💸 Send</b><span>Send money</span></div><div class="tile"><b>📥 Receive</b><span>Get money</span></div><div class="tile"><b>📜 History</b><span>See activity</span></div><div class="tile" id="changePassTile"><b>🔑 Change Password</b><span>Update password</span></div></div><div class="list"><b>Recent Activity</b><p>No activity yet. Your transactions will show here.</p></div></div>
+</main>
+<div id="forgotModal" class="modal"><div class="modal-box"><h2 id="modalTitle">Forgot Password?</h2><p id="modalText">Enter your email, then your new password.</p><input id="resetEmail" type="email" placeholder="Your email" style="margin-bottom:12px"><input id="resetPass" type="password" placeholder="New password (min 6 chars)"><button class="btn primary" id="resetBtn">Change Password</button><button class="btn secondary" id="closeModal" style="background:#e2e8f0;color:#1e1b4b;margin-top:10px">Cancel</button><div id="resetAlert" class="alert" style="margin-top:12px"></div></div></div>
+<script>
+let mode="login";
+function getUsers(){return JSON.parse(localStorage.getItem("everreach_users")||"{}");}
+function saveUsers(u){localStorage.setItem("everreach_users",JSON.stringify(u));}
+function show(m,ok){const a=document.getElementById("alert");a.textContent=m;a.className="alert "+(ok?"ok":"err");a.style.display="block";}
+function hide(){document.getElementById("alert").style.display="none";}
+function setMode(m){mode=m;hide();document.getElementById("password").value="";document.getElementById("title").textContent=m==="login"?"Welcome Back":"Create Account";document.getElementById("sub").textContent=m==="login"?"Sign in to manage your account":"Join Everreach to get started";document.getElementById("passLabel").textContent=m==="login"?"Password":"Create Password";document.getElementById("submitBtn").textContent=m==="login"?"Sign In":"Create Account";document.getElementById("switchBtn").textContent=m==="login"?"Create Account":"Back to Sign In";}
+document.getElementById("eyeBtn").onclick=()=>{const p=document.getElementById("password");p.type=p.type==="password"?"text":"password";};
+document.getElementById("switchBtn").onclick=()=>setMode(mode==="login"?"create":"login");
+document.getElementById("submitBtn").onclick=()=>{
+const email=document.getElementById("email").value.trim().toLowerCase();
+const pass=document.getElementById("password").value;
+if(!email||!pass) return show("Enter email and password");
+const users=getUsers();
+if(mode==="create"){if(users[email]) return show("This email already has an account. Try Sign In.");if(pass.length<6) return show("Password must be at least 6 characters");users[email]=pass;saveUsers(users);show("Account created! Now Sign In.",true);setMode("login");return;}
+else{if(users[email]!==pass) return show("Wrong email or password. Tap Forgot Password?");localStorage.setItem("everreach_session",email);showDash(email);}
+};
+function showDash(email){document.getElementById("authBox").style.display="none";document.getElementById("dashBox").style.display="block";document.getElementById("welcome").textContent="Hi, "+email;}
+function openReset(isChange){document.getElementById("modalTitle").textContent=isChange?"Change Password":"Forgot Password?";document.getElementById("modalText").textContent=isChange?"Enter your email and new password to change it.":"Enter your email, then your new password.";document.getElementById("resetEmail").value=document.getElementById("email").value || localStorage.getItem("everreach_session") || "";document.getElementById("forgotModal").style.display="flex";}
+document.getElementById("logoutBtn").onclick=()=>{localStorage.removeItem("everreach_session");location.reload();};
+document.getElementById("forgotLink").onclick=()=>openReset(false);
+document.getElementById("changePassTile").onclick=()=>openReset(true);
+document.getElementById("closeModal").onclick=()=>{document.getElementById("forgotModal").style.display="none";};
+document.getElementById("resetBtn").onclick=()=>{
+const email=document.getElementById("resetEmail").value.trim().toLowerCase();
+const np=document.getElementById("resetPass").value;
+const ra=document.getElementById("resetAlert");
+const users=getUsers();
+if(!users[email]){ra.textContent="No account found for that email. Create Account first.";ra.className="alert err";ra.style.display="block";return;}
+if(np.length<6){ra.textContent="New password must be at least 6 characters.";ra.className="alert err";ra.style.display="block";return;}
+users[email]=np;saveUsers(users);
+ra.textContent="Password changed! Now Sign In with new password.";ra.className="alert ok";ra.style.display="block";
+setTimeout(()=>{document.getElementById("forgotModal").style.display="none";document.getElementById("email").value=email;document.getElementById("authBox").style.display="block";document.getElementById("dashBox").style.display="none";localStorage.removeItem("everreach_session");setMode("login");show("Password changed! Sign In now.",true);},1200);
+};
+const sess=localStorage.getItem("everreach_session");
+if(sess && getUsers()[sess]) showDash(sess);
+</script>
+</body></html>
