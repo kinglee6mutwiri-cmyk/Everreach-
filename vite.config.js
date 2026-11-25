@@ -18,7 +18,8 @@ export default defineConfig({
                 login: resolve(process.cwd(), 'login.html'),
                 signup: resolve(process.cwd(), 'signup.html'),
                 dashboard: resolve(process.cwd(), 'dashboard.html'),
-                profile: resolve(process.cwd(), 'profile.html')
+                profile: resolve(process.cwd(), 'profile.html'),
+        admin: resolve(process.cwd(), 'admin.html')
             }
         }
     }

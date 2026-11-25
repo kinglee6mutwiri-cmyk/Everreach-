@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Control Center - EVERREACH TECHNOLOGIES</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ padding:20px;
+ font-family:system-ui,Arial,sans-serif;
+ background:#0f172a;
+ color:white;
+}
+header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:15px;
+ margin-bottom:25px;
+}
+h1{font-size:25px;margin:0}
+h2{font-size:19px}
+p{color:#94a3b8}
+.card{
+ background:#1e293b;
+ border:1px solid #334155;
+ border-radius:14px;
+ padding:20px;
+ margin-bottom:18px;
+}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+ gap:15px;
+}
+.stat{
+ background:#0f172a;
+ padding:18px;
+ border-radius:12px;
+}
+.stat strong{
+ display:block;
+ font-size:27px;
+ margin-top:8px;
+}
+button{
+ border:0;
+ border-radius:8px;
+ padding:11px 16px;
+ background:#2563eb;
+ color:white;
+ font-weight:600;
+ cursor:pointer;
+}
+button.secondary{background:#475569}
+button.danger{background:#dc2626}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.table-wrap{overflow-x:auto}
+table{
+ width:100%;
+ border-collapse:collapse;
+ min-width:450px;
+}
+th,td{
+ padding:13px 10px;
+ text-align:left;
+ border-bottom:1px solid #334155;
+ font-size:14px;
+}
+th{color:#94a3b8}
+.status{margin-top:12px}
+#users{margin-top:15px}
+@media(max-width:500px){
+ body{padding:14px}
+ h1{font-size:21px}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div>
+  <h1>EVERREACH ADMIN</h1>
+  <p>Technology Control Center</p>
+ </div>
+ <div class="actions">
+  <button class="secondary" id="refresh">Refresh</button>
+  <button class="danger" id="logout">Log out</button>
+ </div>
+</header>
+
+<section class="card">
+ <h2>Administrator Account</h2>
+ <p id="adminEmail">Verifying administrator access...</p>
+ <p id="status" class="status">Connecting securely...</p>
+</section>
+
+<section class="stats">
+ <div class="stat">
+  <p>Registered Users</p>
+  <strong id="userCount">--</strong>
+ </div>
+ <div class="stat">
+  <p>Control Center</p>
+  <strong>ACTIVE</strong>
+ </div>
+</section>
+
+<section class="card">
+ <h2>Registered Users</h2>
+ <p>Latest registered accounts. Maximum 200 records per request.</p>
+ <div id="users">Loading users...</div>
+</section>
+
+<script>
+const statusEl=document.getElementById("status");
+
+async function loadAdmin(){
+ try{
+  const response=await fetch("/api/admin/me",{
+   credentials:"same-origin",
+   cache:"no-store"
+  });
+
+  const data=await response.json();
+
+  if(response.status===401){
+   window.location.replace("/login.html");
+   return;
+  }
+
+  if(response.status===403){
+   window.location.replace("/dashboard.html");
+   return;
+  }
+
+  if(!response.ok || !data.ok){
+   throw new Error(data.error||"Administrator verification failed.");
+  }
+
+  document.getElementById("adminEmail").textContent=
+   data.admin.email+" — Administrator";
+
+  statusEl.textContent="Administrator access verified.";
+
+  await loadUsers();
+
+ }catch(error){
+  statusEl.textContent=error.message;
+  document.getElementById("users").textContent=
+   "Unable to load administrator data.";
+ }
+}
+
+async function loadUsers(){
+ const container=document.getElementById("users");
+ container.textContent="Loading users...";
+
+ try{
+  const response=await fetch("/api/admin/users",{
+   credentials:"same-origin",
+   cache:"no-store"
+  });
+
+  const data=await response.json();
+
+  if(response.status===401){
+   window.location.replace("/login.html");
+   return;
+  }
+
+  if(response.status===403){
+   window.location.replace("/dashboard.html");
+   return;
+  }
+
+  if(!response.ok || !data.ok){
+   throw new Error(data.error||"Could not retrieve users.");
+  }
+
+  document.getElementById("userCount").textContent=data.count;
+
+  if(data.users.length===0){
+   container.textContent="No registered users found.";
+   return;
+  }
+
+  const table=document.createElement("table");
+  const thead=document.createElement("thead");
+  const headRow=document.createElement("tr");
+
+  ["Email","Role","Registered"].forEach(label=>{
+   const th=document.createElement("th");
+   th.textContent=label;
+   headRow.appendChild(th);
+  });
+
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody=document.createElement("tbody");
+
+  data.users.forEach(user=>{
+   const row=document.createElement("tr");
+
+   [user.email,user.role,user.created_at].forEach(value=>{
+    const cell=document.createElement("td");
+    cell.textContent=value||"—";
+    row.appendChild(cell);
+   });
+
+   tbody.appendChild(row);
+  });
+
+  table.appendChild(tbody);
+
+  container.replaceChildren();
+  const wrapper=document.createElement("div");
+  wrapper.className="table-wrap";
+  wrapper.appendChild(table);
+  container.appendChild(wrapper);
+
+ }catch(error){
+  container.textContent=error.message;
+ }
+}
+
+document.getElementById("refresh").addEventListener("click",loadAdmin);
+
+document.getElementById("logout").addEventListener("click",async()=>{
+ try{
+  await fetch("/api/logout",{
+   method:"POST",
+   credentials:"same-origin"
+  });
+ }catch(error){}
+ window.location.replace("/login.html");
+});
+
+loadAdmin();
+</script>
+</body>
+</html>

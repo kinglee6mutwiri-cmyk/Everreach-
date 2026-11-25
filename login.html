@@ -208,7 +208,7 @@ try{
         password.value="";
     }else{
         notify("Login successful. Opening your dashboard...","success");
-        window.location.href="/dashboard.html";
+        window.location.href=result.user.role==="admin"?"/admin.html":"/dashboard.html";
     }
 }catch(error){
     notify("Cannot reach the server. Make sure the backend is running.","error");

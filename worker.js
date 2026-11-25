@@ -76,6 +76,26 @@ async function getUser(request, db) {
     ).bind(session.email).first();
 }
 
+async function requireAdmin(request, db) {
+  const user = await getUser(request, db);
+
+  if (!user) {
+    return {
+      authorized: false,
+      response: json({error:"Authentication required."},401)
+    };
+  }
+
+  if (user.role !== "admin") {
+    return {
+      authorized: false,
+      response: json({error:"Admin access required."},403)
+    };
+  }
+
+  return {authorized:true,user};
+}
+
 async function api(request, env) {
     const path = new URL(request.url).pathname;
     const db = env.DB;
@@ -165,7 +185,45 @@ async function api(request, env) {
         }
     }
 
-    if (path === "/api/me" && request.method === "GET") {
+    if (path === "/api/admin/users" && request.method === "GET") {
+    try {
+      const access = await requireAdmin(request, db);
+      if (!access.authorized) return access.response;
+
+      const result = await db.prepare(
+        "SELECT email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200"
+      ).all();
+
+      return json({
+        ok:true,
+        users:result.results || [],
+        count:(result.results || []).length
+      });
+    } catch (error) {
+      console.error(error);
+      return json({error:"Could not retrieve users."},500);
+    }
+  }
+
+  if (path === "/api/admin/me" && request.method === "GET") {
+    try {
+      const access = await requireAdmin(request, db);
+      if (!access.authorized) return access.response;
+
+      return json({
+        ok:true,
+        admin:{
+          email:access.user.email,
+          role:access.user.role
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      return json({error:"Admin verification failed."},500);
+    }
+  }
+
+  if (path === "/api/me" && request.method === "GET") {
         try {
             const user = await getUser(request,db);
             if (!user) return json({authenticated:false},401);
@@ -202,7 +260,17 @@ export default {
             const url = new URL(request.url);
             if (url.pathname.startsWith("/api/"))
                 return await api(request,env);
-            return await env.ASSETS.fetch(request);
+            if (url.pathname === "/admin.html") {
+        const user = await getUser(request, env.DB);
+
+        if (!user || user.role !== "admin") {
+          return Response.redirect(
+            new URL("/login.html", request.url), 302
+          );
+        }
+      }
+
+      return await env.ASSETS.fetch(request);
         } catch (error) {
             console.error(error);
             return json({error:"Internal server error."},500);
