@@ -54,6 +54,16 @@ document.getElementById("hello").textContent="Hello, "+user.email;
 document.getElementById("role").textContent=
 user.role==="admin" ? "Administrator access" : "Member account";
 
+if(user.role === "admin"){
+  const button = document.createElement("button");
+  button.textContent = "OPEN ADMIN DASHBOARD";
+  button.style.background = "#2563eb";
+  button.onclick = () => {
+    window.location.href = "/admin.html";
+  };
+  document.querySelector(".card").appendChild(button);
+}
+
 document.getElementById("bal").textContent=
 "KES "+(localStorage.getItem("everreach_balance")||"0");
 
