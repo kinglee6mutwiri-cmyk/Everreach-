@@ -73,6 +73,48 @@ th,td{
 th{color:#94a3b8}
 .status{margin-top:12px}
 #users{margin-top:15px}
+.filters{
+display:grid;
+grid-template-columns:2fr 1fr 1fr;
+gap:12px;
+margin:18px 0;
+}
+.filters input,
+.filters select{
+width:100%;
+min-width:0;
+padding:12px;
+border:1px solid #475569;
+border-radius:8px;
+background:#0f172a;
+color:white;
+font:inherit;
+}
+.filters input::placeholder{
+color:#94a3b8;
+}
+button:disabled{
+opacity:.55;
+cursor:not-allowed;
+}
+.table-wrap{
+width:100%;
+overflow-x:auto;
+}
+table{
+min-width:700px;
+}
+td{
+overflow-wrap:anywhere;
+}
+@media(max-width:650px){
+.filters{
+grid-template-columns:1fr;
+}
+.card{
+padding:15px;
+}
+}
 @media(max-width:500px){
  body{padding:14px}
  h1{font-size:21px}
@@ -113,6 +155,19 @@ th{color:#94a3b8}
 <section class="card">
  <h2>Registered Users</h2>
  <p>Latest registered accounts. Maximum 200 records per request.</p>
+  <div class="filters">
+    <input id="userSearch" type="search" placeholder="Search users by email">
+    <select id="statusFilter">
+      <option value="all">All statuses</option>
+      <option value="active">Active</option>
+      <option value="suspended">Suspended</option>
+    </select>
+    <select id="roleFilter">
+      <option value="all">All roles</option>
+      <option value="user">Users</option>
+      <option value="admin">Administrators</option>
+    </select>
+  </div>
  <div id="users">Loading users...</div>
 </section>
 
@@ -188,6 +243,80 @@ alert(error.message);
 }
 }
 
+let allUsers=[];
+
+function renderUsers(){
+const container=document.getElementById("users");
+
+const search=document.getElementById("userSearch").value.trim().toLowerCase();
+const status=document.getElementById("statusFilter").value;
+const role=document.getElementById("roleFilter").value;
+
+const filtered=allUsers.filter(user=>{
+return user.email.toLowerCase().includes(search)
+&&(status==="all"||user.status===status)
+&&(role==="all"||user.role===role);
+});
+
+if(allUsers.length===0){
+container.textContent="No registered users found.";
+return;
+}
+
+if(filtered.length===0){
+container.textContent="No users match your search or filters.";
+return;
+}
+
+const table=document.createElement("table");
+const thead=document.createElement("thead");
+const headRow=document.createElement("tr");
+
+["Email","Role","Status","Registered","Last Login","Action"].forEach(label=>{
+const th=document.createElement("th");
+th.textContent=label;
+headRow.appendChild(th);
+});
+
+thead.appendChild(headRow);
+table.appendChild(thead);
+
+const tbody=document.createElement("tbody");
+
+filtered.forEach(user=>{
+const row=document.createElement("tr");
+
+[user.email,user.role,user.status,user.created_at,user.last_login?new Date(user.last_login).toLocaleString():"Never"].forEach(value=>{
+const cell=document.createElement("td");
+cell.textContent=value||"-";
+row.appendChild(cell);
+});
+
+const actionCell=document.createElement("td");
+const actionButton=document.createElement("button");
+
+actionButton.textContent=user.role==="admin"?"Protected":user.status==="suspended"?"Unsuspend":"Suspend";
+actionButton.className=user.status==="suspended"?"secondary":"danger";
+actionButton.disabled=user.role==="admin";
+
+if(user.role!=="admin"){
+actionButton.addEventListener("click",()=>manageUser(user.email,user.status));
+}
+
+actionCell.appendChild(actionButton);
+row.appendChild(actionCell);
+tbody.appendChild(row);
+});
+
+table.appendChild(tbody);
+
+container.replaceChildren();
+const wrapper=document.createElement("div");
+wrapper.className="table-wrap";
+wrapper.appendChild(table);
+container.appendChild(wrapper);
+}
+
 async function loadUsers(){
  const container=document.getElementById("users");
  container.textContent="Loading users...";
@@ -216,54 +345,10 @@ async function loadUsers(){
 
   document.getElementById("userCount").textContent=data.count;
 
-  if(data.users.length===0){
-   container.textContent="No registered users found.";
-   return;
-  }
+  allUsers=data.users||[];
+renderUsers();
 
-  const table=document.createElement("table");
-  const thead=document.createElement("thead");
-  const headRow=document.createElement("tr");
-
-["Email","Role","Status","Registered","Action"].forEach(label=>{
-const th=document.createElement("th");
-th.textContent=label;
-headRow.appendChild(th);
-});
-
-thead.appendChild(headRow);
-table.appendChild(thead);
-
-const tbody=document.createElement("tbody");
-
-data.users.forEach(user=>{
-const row=document.createElement("tr");
-
-[user.email,user.role,user.status,user.created_at].forEach(value=>{
-const cell=document.createElement("td");
-cell.textContent=value||"-";
-row.appendChild(cell);
-});
-
-const actionCell=document.createElement("td");
-const actionButton=document.createElement("button");
-actionButton.textContent=user.status==="suspended"?"Unsuspend":"Suspend";
-actionButton.className=user.status==="suspended"?"secondary":"danger";
-actionButton.addEventListener("click",()=>manageUser(user.email,user.status));
-actionCell.appendChild(actionButton);
-row.appendChild(actionCell);
-
-tbody.appendChild(row);
-});
-  table.appendChild(tbody);
-
-  container.replaceChildren();
-  const wrapper=document.createElement("div");
-  wrapper.className="table-wrap";
-  wrapper.appendChild(table);
-  container.appendChild(wrapper);
-
- }catch(error){
+}catch(error){
   container.textContent=error.message;
  }
 }
@@ -282,6 +367,11 @@ document.getElementById("logout").addEventListener("click",async()=>{
   });
  }catch(error){}
  window.location.replace("/login.html");
+});
+
+["userSearch","statusFilter","roleFilter"].forEach(id=>{
+const control=document.getElementById(id);
+control.addEventListener(id==="userSearch"?"input":"change",renderUsers);
 });
 
 loadAdmin();

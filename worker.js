@@ -186,6 +186,10 @@ async function api(request, env) {
                 "INSERT INTO sessions (token_hash,email,expires_at) VALUES (?,?,?)"
             ).bind(tokenHash,email,expires).run();
 
+    await db.prepare(
+      "UPDATE users SET last_login = ? WHERE email = ?"
+    ).bind(new Date().toISOString(),email).run();
+
             return json({
                 ok:true,
                 message:"Login successful.",
@@ -203,7 +207,7 @@ async function api(request, env) {
       if (!access.authorized) return access.response;
 
       const result = await db.prepare(
-        "SELECT email, role, status, created_at FROM users ORDER BY created_at DESC LIMIT 200"
+        "SELECT email, role, status, created_at, last_login FROM users ORDER BY created_at DESC LIMIT 200"
       ).all();
 
       return json({
