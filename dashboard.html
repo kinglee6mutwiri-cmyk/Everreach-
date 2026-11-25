@@ -1,27 +1,80 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dashboard - EVERREACH</title>
-<style>body{margin:0;font-family:system-ui;background:#0f172a;color:white;padding:20px}.card{background:#1e293b;padding:20px;border-radius:16px;text-align:center}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.item{background:#1e293b;padding:20px;border-radius:14px;text-align:center;font-weight:700}button{width:100%;padding:12px;background:#ef4444;border:none;border-radius:10px;color:white;font-weight:800;margin-top:16px}</style></head>
-<body><div class="card"><h2 id="hello">Hello 👋</h2><p style="color:#94a3b8">Your Wallet Balance</p><h1 style="color:#22c55e" id="bal">KES 0</h1></div>
-<div class="grid"><div class="item">🎮<br>Games</div><div class="item">📝<br>Paid Surveys</div><div class="item">💰<br>Wallet</div><div class="item">📚<br>Learning</div><div class="item">👥<br>Community</div><div class="item">📰<br>Articles</div></div>
-<button onclick="logout()">LOGOUT</button>
-<script>let u=JSON.parse(localStorage.getItem('everreach_user')||'null');if(!u){window.location.href='/login.html'}else{document.getElementById('hello').innerText='Hello, '+u.name+' 👋';document.getElementById('bal').innerText='KES '+(localStorage.getItem('everreach_balance')||'0')}function logout(){localStorage.removeItem('everreach_user');window.location.href='/'}</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - EVERREACH TECHNOLOGIES</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:20px;font-family:system-ui;background:#0f172a;color:white}
+.card,.item{background:#1e293b;padding:20px;border-radius:16px}
+.card{text-align:center}
+#bal{color:#22c55e}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+.item{text-align:center}
+.item a{color:white;text-decoration:none;display:block}
+button{width:100%;padding:14px;background:#ef4444;border:0;border-radius:10px;color:white;font-weight:800;margin-top:20px}
+#status{color:#94a3b8;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h2 id="hello">Loading your account...</h2>
+<p style="color:#94a3b8">Your Wallet Balance</p>
+<h1 id="bal">KES 0</h1>
+<p id="role"></p>
+</div>
+
+<div class="grid">
+<div class="item"><br>Games</div>
+<div class="item"><br>Paid Surveys</div>
+<div class="item"><br>Wallet</div>
+<div class="item"><br>Learnings</div>
+<div class="item"><br>Community</div>
+<div class="item"><br>Articles</div>
+</div>
+
+<p id="status">Checking your secure session...</p>
+<button id="logout">LOG OUT</button>
+
 <script>
-(function(){
-  const sb = window.supabase ? window.supabase.createClient('https://ihxmejlwzlmmaqghofoh.supabase.co','sb_publishable_IIyd49_tAKF7H8A8gGeJew_hJVcwLGh') : null;
-  function doLogout(e){
-    if(e) e.preventDefault();
-    localStorage.removeItem('everreach_email');
-    localStorage.clear();
-    sessionStorage.clear();
-    if(sb) sb.auth.signOut().finally(()=>{ window.location.href='login.html'; });
-    else window.location.href='login.html';
-  }
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const btns = Array.from(document.querySelectorAll('button, a'));
-    const out = btns.find(b=>b.textContent.trim().toUpperCase().includes('LOGOUT') || b.textContent.trim().toUpperCase().includes('LOG OUT'));
-    if(out) out.onclick = doLogout;
-  });
-})();
+async function loadAccount(){
+try{
+const response=await fetch("/api/me",{credentials:"include"});
+const data=await response.json();
+
+if(!response.ok || !data.authenticated){
+window.location.replace("login.html");
+return;
+}
+
+const user=data.user;
+document.getElementById("hello").textContent="Hello, "+user.email;
+document.getElementById("role").textContent=
+user.role==="admin" ? "Administrator access" : "Member account";
+
+document.getElementById("bal").textContent=
+"KES "+(localStorage.getItem("everreach_balance")||"0");
+
+document.getElementById("status").textContent="Your account is connected.";
+}catch(error){
+document.getElementById("status").textContent=
+"Cannot connect to the authentication server.";
+}
+}
+
+document.getElementById("logout").addEventListener("click",async()=>{
+try{
+await fetch("/api/logout",{
+method:"POST",
+credentials:"include"
+});
+}catch(error){}
+window.location.replace("login.html");
+});
+
+loadAccount();
 </script>
 </body>
 </html>
