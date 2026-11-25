@@ -1,6 +1,13 @@
 name = "everreach"
+main = "worker.js"
 compatibility_date = "2025-01-01"
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
 not_found_handling = "single-page-application"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "everreach-db"
+database_id = "1e771f09-cacf-48b8-9fe7-773d2d3e16a8"
