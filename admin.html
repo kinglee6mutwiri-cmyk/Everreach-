@@ -156,6 +156,38 @@ async function loadAdmin(){
  }
 }
 
+async function manageUser(email,status){
+const suspended=status==="suspended";
+const action=suspended?"unsuspend":"suspend";
+
+const confirmed=confirm(
+(suspended?"Reactivate":"Suspend")+" account for "+email+"?"
+);
+
+if(!confirmed)return;
+
+try{
+const response=await fetch("/api/admin/users/"+action,{
+method:"POST",
+credentials:"same-origin",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({email})
+});
+
+const data=await response.json();
+
+if(!response.ok){
+throw new Error(data.error||"Account update failed.");
+}
+
+alert(data.message||"Account updated successfully.");
+await loadUsers();
+
+}catch(error){
+alert(error.message);
+}
+}
+
 async function loadUsers(){
  const container=document.getElementById("users");
  container.textContent="Loading users...";
@@ -193,29 +225,36 @@ async function loadUsers(){
   const thead=document.createElement("thead");
   const headRow=document.createElement("tr");
 
-  ["Email","Role","Registered"].forEach(label=>{
-   const th=document.createElement("th");
-   th.textContent=label;
-   headRow.appendChild(th);
-  });
+["Email","Role","Status","Registered","Action"].forEach(label=>{
+const th=document.createElement("th");
+th.textContent=label;
+headRow.appendChild(th);
+});
 
-  thead.appendChild(headRow);
-  table.appendChild(thead);
+thead.appendChild(headRow);
+table.appendChild(thead);
 
-  const tbody=document.createElement("tbody");
+const tbody=document.createElement("tbody");
 
-  data.users.forEach(user=>{
-   const row=document.createElement("tr");
+data.users.forEach(user=>{
+const row=document.createElement("tr");
 
-   [user.email,user.role,user.created_at].forEach(value=>{
-    const cell=document.createElement("td");
-    cell.textContent=value||"—";
-    row.appendChild(cell);
-   });
+[user.email,user.role,user.status,user.created_at].forEach(value=>{
+const cell=document.createElement("td");
+cell.textContent=value||"-";
+row.appendChild(cell);
+});
 
-   tbody.appendChild(row);
-  });
+const actionCell=document.createElement("td");
+const actionButton=document.createElement("button");
+actionButton.textContent=user.status==="suspended"?"Unsuspend":"Suspend";
+actionButton.className=user.status==="suspended"?"secondary":"danger";
+actionButton.addEventListener("click",()=>manageUser(user.email,user.status));
+actionCell.appendChild(actionButton);
+row.appendChild(actionCell);
 
+tbody.appendChild(row);
+});
   table.appendChild(tbody);
 
   container.replaceChildren();

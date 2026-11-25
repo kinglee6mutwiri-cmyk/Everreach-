@@ -71,9 +71,18 @@ async function getUser(request, db) {
         return null;
     }
 
-    return db.prepare(
-        "SELECT email, role FROM users WHERE email = ?"
-    ).bind(session.email).first();
+  const user = await db.prepare(
+    "SELECT email, role, status FROM users WHERE email = ?"
+  ).bind(session.email).first();
+
+  if (!user || user.status !== "active") {
+    await db.prepare(
+      "DELETE FROM sessions WHERE token_hash = ?"
+    ).bind(hash).run();
+    return null;
+  }
+
+  return user;
 }
 
 async function requireAdmin(request, db) {
@@ -148,11 +157,14 @@ async function api(request, env) {
             const password = String(body.password || "");
 
             const user = await db.prepare(
-                "SELECT email,password_hash,role FROM users WHERE email = ?"
+                "SELECT email,password_hash,role,status FROM users WHERE email = ?"
             ).bind(email).first();
 
             if (!user)
                 return json({error:"Incorrect email or password."},401);
+
+    if (user.status !== "active")
+      return json({error:"Your account is suspended. Contact support."},403);
 
             const parts = user.password_hash.split(":");
             if (parts.length !== 2)
@@ -191,7 +203,7 @@ async function api(request, env) {
       if (!access.authorized) return access.response;
 
       const result = await db.prepare(
-        "SELECT email, role, created_at FROM users ORDER BY created_at DESC LIMIT 200"
+        "SELECT email, role, status, created_at FROM users ORDER BY created_at DESC LIMIT 200"
       ).all();
 
       return json({
@@ -205,7 +217,71 @@ async function api(request, env) {
     }
   }
 
-  if (path === "/api/admin/me" && request.method === "GET") {
+  if (path === "/api/admin/users/suspend" && request.method === "POST") {
+  try {
+    const access = await requireAdmin(request, db);
+    if (!access.authorized) return access.response;
+
+    const body = await request.json();
+    const email = typeof body.email === "string"
+      ? body.email.trim().toLowerCase()
+      : "";
+
+    if (!email) return json({error:"User email is required."},400);
+
+    const target = await db.prepare(
+      "SELECT email, role FROM users WHERE email = ?"
+    ).bind(email).first();
+
+    if (!target) return json({error:"User not found."},404);
+
+    if (target.role === "admin") {
+      return json({error:"Administrator accounts cannot be suspended."},403);
+    }
+
+    await db.prepare(
+      "UPDATE users SET status = 'suspended' WHERE email = ?"
+    ).bind(email).run();
+
+    await db.prepare(
+      "DELETE FROM sessions WHERE email = ?"
+    ).bind(email).run();
+
+    return json({ok:true,message:"User account suspended."});
+  } catch (error) {
+    console.error(error);
+    return json({error:"Could not suspend account."},500);
+  }
+}
+
+if (path === "/api/admin/users/unsuspend" && request.method === "POST") {
+  try {
+    const access = await requireAdmin(request, db);
+    if (!access.authorized) return access.response;
+
+    const body = await request.json();
+    const email = typeof body.email === "string"
+      ? body.email.trim().toLowerCase()
+      : "";
+
+    if (!email) return json({error:"User email is required."},400);
+
+    const result = await db.prepare(
+      "UPDATE users SET status = 'active' WHERE email = ? AND status = 'suspended'"
+    ).bind(email).run();
+
+    if (!result.meta || result.meta.changes === 0) {
+      return json({error:"Suspended user not found or account is already active."},404);
+    }
+
+    return json({ok:true,message:"User account reactivated."});
+  } catch (error) {
+    console.error(error);
+    return json({error:"Could not reactivate account."},500);
+  }
+}
+
+if (path === "/api/admin/me" && request.method === "GET") {
     try {
       const access = await requireAdmin(request, db);
       if (!access.authorized) return access.response;
