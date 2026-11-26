@@ -169,7 +169,119 @@ async function api(request, env) {
         }
     }
 
-    if (path === "/api/login" && request.method === "POST") {
+    if (path === "/api/company/register" && request.method === "POST") {
+    try {
+      const body = await request.json();
+
+      const email = String(body.email || "").trim().toLowerCase();
+      const password = String(body.password || "");
+      const legalName = String(body.legalName || "").trim();
+      const displayName = String(body.displayName || "").trim();
+      const registrationNumber = String(body.registrationNumber || "").trim();
+      const countryCode = String(body.countryCode || "").trim().toUpperCase();
+      const baseCurrency = String(body.baseCurrency || "").trim().toUpperCase();
+      const website = String(body.website || "").trim();
+      const contactPhone = String(body.contactPhone || "").trim();
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        return json({error:"Enter a valid owner email address."},400);
+
+      if (password.length < 8 || password.length > 128)
+        return json({error:"Password must contain 8 to 128 characters."},400);
+
+      if (body.ageConfirmed !== true)
+        return json({error:"You must confirm that you are at least 18 years old."},400);
+
+      if (!legalName || legalName.length > 180)
+        return json({error:"Enter a valid legal company name."},400);
+
+      if (!displayName || displayName.length > 120)
+        return json({error:"Enter a valid business display name."},400);
+
+      if (!/^[A-Z]{2}$/.test(countryCode))
+        return json({error:"Enter a valid two-letter country code."},400);
+
+      if (!/^[A-Z]{3}$/.test(baseCurrency))
+        return json({error:"Enter a valid three-letter currency code."},400);
+
+      if (registrationNumber.length > 100 || contactPhone.length > 40)
+        return json({error:"Registration number or phone number is too long."},400);
+
+      if (website) {
+        try {
+          const parsedWebsite = new URL(website);
+          if (!["http:", "https:"].includes(parsedWebsite.protocol))
+            throw new Error("Invalid protocol");
+        } catch {
+          return json({error:"Enter a valid website URL beginning with https:// or http://."},400);
+        }
+      }
+
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const saltText = Array.from(
+        salt,
+        b => b.toString(16).padStart(2,"0")
+      ).join("");
+
+      const passwordHash = await hashPassword(password,salt);
+      const now = new Date().toISOString();
+
+      await db.batch([
+        db.prepare(
+          "INSERT INTO users (email,password_hash,role,created_at,status) VALUES (?,?,?,?,?)"
+        ).bind(
+          email,
+          saltText + ":" + passwordHash,
+          "company",
+          now,
+          "active"
+        ),
+
+        db.prepare(
+          `INSERT INTO companies (
+            owner_email,legal_name,display_name,registration_number,
+            country_code,base_currency,website,contact_phone,
+            verification_status,created_at,updated_at
+          ) VALUES (?,?,?,?,?,?,?,?,?,?,?)`
+        ).bind(
+          email,
+          legalName,
+          displayName,
+          registrationNumber || null,
+          countryCode,
+          baseCurrency,
+          website || null,
+          contactPhone || null,
+          "pending",
+          now,
+          now
+        )
+      ]);
+
+      await logActivity(
+        db,
+        email,
+        email,
+        "company_registration",
+        "Company registered and submitted for administrator approval"
+      );
+
+      return json({
+        ok:true,
+        message:"Company registration received. Your account is awaiting administrator approval.",
+        verificationStatus:"pending"
+      },201);
+
+    } catch (error) {
+      if (String(error.message).toLowerCase().includes("unique"))
+        return json({error:"This email is already registered."},409);
+
+      console.error("Company registration failed:",error);
+      return json({error:"Company registration failed. Please try again."},500);
+    }
+  }
+
+  if (path === "/api/login" && request.method === "POST") {
         try {
             const body = await request.json();
             const email = String(body.email || "").trim().toLowerCase();
@@ -360,6 +472,36 @@ if (path === "/api/admin/me" && request.method === "GET") {
     }
   }
 
+  if (path === "/api/company/me" && request.method === "GET") {
+    try {
+      const user = await getUser(request, db);
+
+      if (!user || user.role !== "company") {
+        return json({error:"Company account access required."},403);
+      }
+
+      const result = await db.prepare(
+        `SELECT id, legal_name, display_name, registration_number,
+                country_code, base_currency, website, contact_phone,
+                verification_status, rejection_reason, created_at
+         FROM companies
+         WHERE owner_email = ?`
+      ).bind(user.email).first();
+
+      if (!result) {
+        return json({error:"Company profile not found."},404);
+      }
+
+      return json({
+        ok:true,
+        company:result
+      });
+    } catch (error) {
+      console.error("Company profile retrieval failed:",error);
+      return json({error:"Could not retrieve company profile."},500);
+    }
+  }
+
   if (path === "/api/me" && request.method === "GET") {
         try {
             const user = await getUser(request,db);
@@ -414,6 +556,16 @@ export default {
           );
         }
       }
+
+        if (url.pathname === "/company-dashboard.html") {
+          const user = await getUser(request, env.DB);
+
+          if (!user || user.role !== "company") {
+            return Response.redirect(
+              new URL("/login.html", request.url), 302
+            );
+          }
+        }
 
       return await env.ASSETS.fetch(request);
         } catch (error) {

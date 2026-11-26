@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
+<title>Company Dashboard | EVERREACH</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#07111f;
+--panel:#101e30;
+--gold:#e5bd70;
+--teal:#39d4c2;
+--muted:#9eafc4;
+--border:#263b52;
+}
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:radial-gradient(circle at top right,rgba(57,212,194,.09),transparent 28%),var(--bg);
+color:#fff;
+min-height:100vh;
+}
+header{
+height:75px;
+padding:0 5%;
+display:flex;
+align-items:center;
+justify-content:space-between;
+border-bottom:1px solid var(--border);
+background:#091525;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+width:42px;height:42px;
+border:1px solid var(--gold);
+border-radius:11px;
+display:flex;align-items:center;justify-content:center;
+color:var(--gold);font-weight:900;font-size:22px;
+transform:rotate(45deg);
+}
+.logo span{transform:rotate(-45deg)}
+.brand h1{font-size:18px;letter-spacing:3px}
+.brand p{font-size:9px;color:var(--muted);letter-spacing:1.5px;margin-top:5px}
+.logout{
+border:1px solid var(--border);
+background:transparent;
+color:#fff;
+padding:10px 16px;
+border-radius:8px;
+cursor:pointer;
+}
+main{max-width:1150px;margin:auto;padding:35px 22px}
+.welcome{margin-bottom:25px}
+.welcome small{color:var(--teal);letter-spacing:2px;font-weight:bold;font-size:11px}
+.welcome h2{font-size:29px;margin:10px 0}
+.welcome p{color:var(--muted);font-size:14px}
+.status-panel{
+padding:22px;
+border:1px solid rgba(229,189,112,.35);
+background:linear-gradient(110deg,rgba(229,189,112,.09),rgba(16,30,48,.8));
+border-radius:15px;
+margin-bottom:25px;
+}
+.status-panel h3{color:var(--gold);font-size:17px;margin-bottom:8px}
+.status-panel p{font-size:13px;color:#c4d0df;line-height:1.7}
+.status{
+display:inline-block;
+padding:7px 12px;
+border-radius:30px;
+font-size:11px;
+font-weight:bold;
+margin-top:12px;
+background:#3c3320;
+color:#f4d28d;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px;
+margin:22px 0;
+}
+.card{
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:14px;
+padding:22px;
+}
+.card .symbol{font-size:22px;margin-bottom:14px;color:var(--gold)}
+.card h3{font-size:15px;margin-bottom:9px}
+.card p{font-size:12px;color:var(--muted);line-height:1.7}
+.section-title{
+font-size:17px;
+margin:30px 0 15px;
+}
+.profile{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+}
+.detail{
+padding:16px;
+border-radius:10px;
+background:#0a1728;
+border:1px solid var(--border);
+}
+.detail small{display:block;color:var(--muted);font-size:11px;margin-bottom:8px}
+.detail strong{font-size:13px;overflow-wrap:anywhere}
+.notice{
+color:var(--muted);
+font-size:12px;
+line-height:1.7;
+margin-top:20px;
+}
+.error{
+background:#48202c;
+color:#ffc0ca;
+padding:14px;
+border-radius:9px;
+font-size:13px;
+display:none;
+margin-bottom:15px;
+}
+footer{
+text-align:center;
+padding:25px;
+color:#718198;
+font-size:11px;
+border-top:1px solid var(--border);
+margin-top:40px;
+}
+@media(max-width:700px){
+.grid{grid-template-columns:1fr}
+.profile{grid-template-columns:1fr}
+main{padding:25px 16px}
+.welcome h2{font-size:24px}
+}
+</style>
+</head>
+
+<body>
+<header>
+<div class="brand">
+<div class="logo"><span>E</span></div>
+<div>
+<h1>EVERREACH</h1>
+<p>BUSINESS CONTROL CENTRE</p>
+</div>
+</div>
+<button class="logout" id="logoutBtn">Sign Out</button>
+</header>
+
+<main>
+<section class="welcome">
+<small>COMPANY WORKSPACE</small>
+<h2 id="companyName">Loading company profile...</h2>
+<p>Manage your business presence and prepare to reach global opportunities.</p>
+</section>
+
+<div id="error" class="error"></div>
+
+<section class="status-panel">
+<h3>Company verification</h3>
+<p id="statusDescription">Checking your company verification status...</p>
+<div id="verificationStatus" class="status">CHECKING</div>
+</section>
+
+<h3 class="section-title">Business overview</h3>
+
+<section class="grid">
+<div class="card">
+<div class="symbol">◈</div>
+<h3>Campaign Management</h3>
+<p>Create, organise and monitor performance-based campaigns. Available after company approval and campaign system activation.</p>
+</div>
+
+<div class="card">
+<div class="symbol">◇</div>
+<h3>Funding & Payments</h3>
+<p>View campaign funding, payment records and financial activity when the secure payment system becomes available.</p>
+</div>
+
+<div class="card">
+<div class="symbol">◎</div>
+<h3>Performance Analytics</h3>
+<p>Monitor campaign participation, approved results and performance reports.</p>
+</div>
+</section>
+
+<h3 class="section-title">Company information</h3>
+
+<section class="profile">
+<div class="detail">
+<small>Legal company name</small>
+<strong id="legalName">Loading...</strong>
+</div>
+<div class="detail">
+<small>Business display name</small>
+<strong id="displayName">Loading...</strong>
+</div>
+<div class="detail">
+<small>Registration number</small>
+<strong id="registrationNumber">—</strong>
+</div>
+<div class="detail">
+<small>Country</small>
+<strong id="countryCode">—</strong>
+</div>
+<div class="detail">
+<small>Base currency</small>
+<strong id="baseCurrency">—</strong>
+</div>
+<div class="detail">
+<small>Website</small>
+<strong id="website">—</strong>
+</div>
+<div class="detail">
+<small>Business contact</small>
+<strong id="contactPhone">—</strong>
+</div>
+<div class="detail">
+<small>Registration date</small>
+<strong id="createdAt">—</strong>
+</div>
+</section>
+
+<p class="notice">
+EVERREACH company accounts are subject to verification and platform policies. Campaign creation, funding and withdrawals will be activated only when their respective systems are implemented and authorised.
+</p>
+</main>
+
+<footer>
+EVERREACH TECHNOLOGIES · ONE WORLD. ENDLESS OPPORTUNITIES.<br>
+© 2026 EVERREACH. All rights reserved.
+</footer>
+
+<script>
+const errorBox = document.getElementById("error");
+
+function showError(text){
+errorBox.textContent = text;
+errorBox.style.display = "block";
+}
+
+function showValue(id,value){
+document.getElementById(id).textContent = value || "Not provided";
+}
+
+async function loadCompany(){
+try{
+const response = await fetch("/api/company/me",{
+credentials:"same-origin"
+});
+
+const result = await response.json();
+
+if(!response.ok){
+if(response.status === 401 || response.status === 403){
+window.location.href = "/login.html";
+return;
+}
+showError(result.error || "Unable to load company profile.");
+return;
+}
+
+const company = result.company;
+
+showValue("companyName",company.display_name);
+showValue("legalName",company.legal_name);
+showValue("displayName",company.display_name);
+showValue("registrationNumber",company.registration_number);
+showValue("countryCode",company.country_code);
+showValue("baseCurrency",company.base_currency);
+showValue("website",company.website);
+showValue("contactPhone",company.contact_phone);
+
+showValue("createdAt",company.created_at
+? new Date(company.created_at).toLocaleDateString()
+: "Not available");
+
+const status = company.verification_status;
+const badge = document.getElementById("verificationStatus");
+const description = document.getElementById("statusDescription");
+
+badge.textContent = String(status || "unknown").toUpperCase();
+
+if(status === "approved"){
+description.textContent = "Your company has been approved. You can prepare to access company campaign features as they become available.";
+badge.style.background = "#123a32";
+badge.style.color = "#9af0ce";
+}else if(status === "rejected"){
+description.textContent = company.rejection_reason || "Your company registration was not approved. Please contact EVERREACH support for clarification.";
+badge.style.background = "#48202c";
+badge.style.color = "#ffc0ca";
+}else if(status === "suspended"){
+description.textContent = "Your company account is suspended. Contact EVERREACH support for assistance.";
+badge.style.background = "#48202c";
+badge.style.color = "#ffc0ca";
+}else{
+description.textContent = "Your registration has been received and is awaiting administrator review. Campaign features are not yet available.";
+}
+
+}catch(error){
+showError("Unable to connect to EVERREACH. Please try again.");
+}
+}
+
+document.getElementById("logoutBtn").addEventListener("click",async()=>{
+try{
+await fetch("/api/logout",{
+method:"POST",
+credentials:"same-origin"
+});
+}catch(error){}
+window.location.href = "/login.html";
+});
+
+loadCompany();
+</script>
+</body>
+</html>

@@ -171,8 +171,13 @@ form.addEventListener("submit", async (event) => {
             notify(result.error || "Login failed.", "error");
         } else {
             notify("Login successful. Opening your dashboard...", "success");
-            window.location.href =
-                result.user.role === "admin" ? "/admin.html" : "/dashboard.html";
+    if (result.user.role === "admin") {
+      window.location.href = "/admin.html";
+    } else if (result.user.role === "company") {
+      window.location.href = "/company-dashboard.html";
+    } else {
+      window.location.href = "/dashboard.html";
+    }
         }
     } catch (error) {
         notify("Cannot reach EVERREACH. Please try again.", "error");

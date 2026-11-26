@@ -17,6 +17,8 @@ export default defineConfig({
                 index: resolve(process.cwd(), 'index.html'),
                 login: resolve(process.cwd(), 'login.html'),
                 signup: resolve(process.cwd(), 'signup.html'),
+        companySignup: resolve(process.cwd(), 'company-signup.html'),
+        companyDashboard: resolve(process.cwd(), 'company-dashboard.html'),
                 dashboard: resolve(process.cwd(), 'dashboard.html'),
                 profile: resolve(process.cwd(), 'profile.html'),
         admin: resolve(process.cwd(), 'admin.html')
