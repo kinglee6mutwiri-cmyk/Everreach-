@@ -119,6 +119,35 @@ padding:15px;
  body{padding:14px}
  h1{font-size:21px}
 }
+
+.portal-links{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+gap:12px;
+margin-top:18px;
+}
+.portal-link{
+display:block;
+padding:15px;
+border:1px solid #475569;
+border-radius:10px;
+background:#0f172a;
+color:#e2e8f0;
+text-decoration:none;
+font-weight:600;
+}
+.portal-link:hover{
+border-color:#38bdf8;
+background:#172554;
+}
+.portal-link span{
+display:block;
+margin-top:5px;
+font-size:12px;
+font-weight:400;
+color:#94a3b8;
+}
+
 </style>
 </head>
 <body>
@@ -139,6 +168,31 @@ padding:15px;
  <h2>Administrator Account</h2>
  <p id="adminEmail">Verifying administrator access...</p>
  <p id="status" class="status">Connecting securely...</p>
+</section>
+
+<section class="card">
+<h2>EVERREACH Portal Access</h2>
+<p>Open and inspect the public, individual, company, and administrator portals.</p>
+
+<div class="portal-links">
+<a class="portal-link" href="/" target="_blank">Public Homepage
+<span>Main EVERREACH website</span></a>
+
+<a class="portal-link" href="/signup.html" target="_blank">Individual Registration
+<span>Register a new user account</span></a>
+
+<a class="portal-link" href="/login.html" target="_blank">Individual Login
+<span>Access the login portal</span></a>
+
+<a class="portal-link" href="/company-signup.html" target="_blank">Company Registration
+<span>Register a business account</span></a>
+
+<a class="portal-link" href="/company-dashboard.html" target="_blank">Company Dashboard
+<span>Access the company portal</span></a>
+
+<a class="portal-link" href="/admin.html">Admin Dashboard
+<span>Return to this control center</span></a>
+</div>
 </section>
 
 <section class="stats">
