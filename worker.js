@@ -255,7 +255,16 @@ async function api(request, env) {
           "pending",
           now,
           now
-        )
+        ),
+
+        db.prepare(
+          `INSERT INTO company_wallets (
+            company_id,currency,created_at,updated_at
+          )
+          SELECT id,base_currency,?,?
+          FROM companies
+          WHERE owner_email = ?`
+        ).bind(now,now,email)
       ]);
 
       await logActivity(
@@ -348,7 +357,166 @@ async function api(request, env) {
         }
     }
 
-    if (path === "/api/admin/users" && request.method === "GET") {
+
+  if (path === "/api/admin/companies" && request.method === "GET") {
+    try {
+      const access = await requireAdmin(request, db);
+      if (!access.authorized) return access.response;
+
+      const status = new URL(request.url).searchParams.get("status") || "pending";
+
+      if (!["pending", "approved", "rejected", "suspended"].includes(status)) {
+        return json({error:"Invalid company status."},400);
+      }
+
+      const result = await db.prepare(`
+        SELECT
+          c.id,
+          c.owner_email,
+          c.legal_name,
+          c.display_name,
+          c.registration_number,
+          c.country_code,
+          c.base_currency,
+          c.website,
+          c.contact_phone,
+          c.verification_status,
+          c.rejection_reason,
+          c.created_at,
+          c.reviewed_by,
+          c.reviewed_at,
+          u.status AS account_status
+        FROM companies c
+        JOIN users u ON u.email = c.owner_email
+        WHERE c.verification_status = ?
+          AND (? != 'approved' OR u.status = 'active')
+        ORDER BY c.created_at DESC
+        LIMIT 200
+      `).bind(status,status).all();
+
+      return json({
+        ok:true,
+        companies:result.results || [],
+        count:(result.results || []).length
+      });
+    } catch (error) {
+      console.error(error);
+      return json({error:"Could not retrieve company applications."},500);
+    }
+  }
+
+  if (path === "/api/admin/companies/approve" && request.method === "POST") {
+    try {
+      const access = await requireAdmin(request, db);
+      if (!access.authorized) return access.response;
+
+      const body = await request.json();
+      const companyId = Number(body.companyId);
+
+      if (!Number.isSafeInteger(companyId) || companyId < 1) {
+        return json({error:"A valid company ID is required."},400);
+      }
+
+      const company = await db.prepare(
+        "SELECT id, owner_email, verification_status FROM companies WHERE id = ?"
+      ).bind(companyId).first();
+
+      if (!company) return json({error:"Company application not found."},404);
+
+      if (company.verification_status !== "pending") {
+        return json({error:"Only pending applications can be approved."},409);
+      }
+
+      const now = new Date().toISOString();
+
+      const result = await db.prepare(`
+        UPDATE companies
+        SET verification_status = 'approved',
+            rejection_reason = NULL,
+            reviewed_by = ?,
+            reviewed_at = ?,
+            updated_at = ?
+        WHERE id = ? AND verification_status = 'pending'
+      `).bind(access.user.email,now,now,companyId).run();
+
+      if (!result.meta || result.meta.changes !== 1) {
+        return json({error:"Application changed. Refresh and try again."},409);
+      }
+
+      await logActivity(
+        db,
+        access.user.email,
+        company.owner_email,
+        "company_approved",
+        "Administrator approved company application"
+      );
+
+      return json({ok:true,message:"Company application approved."});
+    } catch (error) {
+      console.error(error);
+      return json({error:"Could not approve company application."},500);
+    }
+  }
+
+  if (path === "/api/admin/companies/reject" && request.method === "POST") {
+    try {
+      const access = await requireAdmin(request, db);
+      if (!access.authorized) return access.response;
+
+      const body = await request.json();
+      const companyId = Number(body.companyId);
+      const reason = String(body.reason || "").trim();
+
+      if (!Number.isSafeInteger(companyId) || companyId < 1) {
+        return json({error:"A valid company ID is required."},400);
+      }
+
+      if (reason.length < 5 || reason.length > 500) {
+        return json({error:"Rejection reason must contain 5 to 500 characters."},400);
+      }
+
+      const company = await db.prepare(
+        "SELECT id, owner_email, verification_status FROM companies WHERE id = ?"
+      ).bind(companyId).first();
+
+      if (!company) return json({error:"Company application not found."},404);
+
+      if (company.verification_status !== "pending") {
+        return json({error:"Only pending applications can be rejected."},409);
+      }
+
+      const now = new Date().toISOString();
+
+      const result = await db.prepare(`
+        UPDATE companies
+        SET verification_status = 'rejected',
+            rejection_reason = ?,
+            reviewed_by = ?,
+            reviewed_at = ?,
+            updated_at = ?
+        WHERE id = ? AND verification_status = 'pending'
+      `).bind(reason,access.user.email,now,now,companyId).run();
+
+      if (!result.meta || result.meta.changes !== 1) {
+        return json({error:"Application changed. Refresh and try again."},409);
+      }
+
+      await logActivity(
+        db,
+        access.user.email,
+        company.owner_email,
+        "company_rejected",
+        "Company application rejected: " + reason
+      );
+
+      return json({ok:true,message:"Company application rejected."});
+    } catch (error) {
+      console.error(error);
+      return json({error:"Could not reject company application."},500);
+    }
+  }
+
+  if (path === "/api/admin/users" && request.method === "GET") {
     try {
       const access = await requireAdmin(request, db);
       if (!access.authorized) return access.response;

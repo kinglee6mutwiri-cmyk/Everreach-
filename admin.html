@@ -148,6 +148,57 @@ font-weight:400;
 color:#94a3b8;
 }
 
+
+.company-management{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:16px;
+margin-top:20px;
+}
+.company-panel{
+padding:18px;
+border-radius:13px;
+border:1px solid #475569;
+background:linear-gradient(145deg,#1e293b,#0f172a);
+min-width:0;
+}
+.company-panel.pending{border-top:4px solid #f59e0b}
+.company-panel.approved{border-top:4px solid #10b981}
+.company-panel.rejected{border-top:4px solid #ef4444}
+.company-panel.suspended{border-top:4px solid #a78bfa}
+.company-panel h3{margin-top:0}
+.company-list{margin-top:15px}
+.company-item{
+padding:14px;
+margin-top:12px;
+border:1px solid #475569;
+border-radius:10px;
+background:#0b1220;
+overflow-wrap:anywhere;
+}
+.company-item p{margin:7px 0;font-size:13px}
+.company-actions{
+display:flex;
+flex-wrap:wrap;
+gap:9px;
+margin-top:12px;
+}
+.company-actions button{font-size:13px}
+.approve-btn{background:#059669}
+.reject-btn{background:#dc2626}
+.company-empty{font-size:13px;color:#94a3b8}
+.company-count{
+display:inline-block;
+padding:4px 10px;
+border-radius:20px;
+background:#334155;
+margin-left:6px;
+font-size:12px;
+}
+@media(max-width:600px){
+.company-management{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -158,8 +209,7 @@ color:#94a3b8;
   <p>Technology Control Center</p>
  </div>
  <div class="actions">
-  <button class="secondary" id="userDashboard">User Dashboard</button>
-  <button class="secondary" id="refresh">Refresh</button>
+    <button class="secondary" id="refresh">Refresh</button>
   <button class="danger" id="logout">Log out</button>
  </div>
 </header>
@@ -172,28 +222,49 @@ color:#94a3b8;
 
 <section class="card">
 <h2>EVERREACH Portal Access</h2>
-<p>Open and inspect the public, individual, company, and administrator portals.</p>
-
+<p>Access the public website and company registration portal.</p>
 <div class="portal-links">
 <a class="portal-link" href="/" target="_blank">Public Homepage
 <span>Main EVERREACH website</span></a>
-
-<a class="portal-link" href="/signup.html" target="_blank">Individual Registration
-<span>Register a new user account</span></a>
-
-<a class="portal-link" href="/login.html" target="_blank">Individual Login
-<span>Access the login portal</span></a>
-
 <a class="portal-link" href="/company-signup.html" target="_blank">Company Registration
 <span>Register a business account</span></a>
-
-<a class="portal-link" href="/company-dashboard.html" target="_blank">Company Dashboard
-<span>Access the company portal</span></a>
-
-<a class="portal-link" href="/admin.html">Admin Dashboard
-<span>Return to this control center</span></a>
 </div>
 </section>
+
+
+<section class="card">
+<h2>Company Management Center</h2>
+<p>Review applications and manage the verification status of registered companies.</p>
+
+<div class="company-management">
+
+<div class="company-panel pending">
+<h3>Pending Applications <span class="company-count" id="pendingCount">0</span></h3>
+<p>Companies waiting for administrator review.</p>
+<div class="company-list" id="pendingCompanies">Loading applications...</div>
+</div>
+
+<div class="company-panel approved">
+<h3>Approved & Active <span class="company-count" id="approvedCount">0</span></h3>
+<p>Verified companies allowed to submit campaigns for approval.</p>
+<div class="company-list" id="approvedCompanies">Loading companies...</div>
+</div>
+
+<div class="company-panel rejected">
+<h3>Rejected Applications <span class="company-count" id="rejectedCount">0</span></h3>
+<p>Companies whose applications were rejected.</p>
+<div class="company-list" id="rejectedCompanies">Loading companies...</div>
+</div>
+
+<div class="company-panel suspended">
+<h3>Suspended Companies <span class="company-count" id="suspendedCount">0</span></h3>
+<p>Companies whose platform access has been suspended.</p>
+<div class="company-list" id="suspendedCompanies">Loading companies...</div>
+</div>
+
+</div>
+</section>
+
 
 <section class="stats">
  <div class="stat">
@@ -557,10 +628,6 @@ document.getElementById("refreshActivity").addEventListener("click",loadActivity
 
 document.getElementById("refresh").addEventListener("click",loadAdmin);
 
-document.getElementById("userDashboard").addEventListener("click",()=>{
- window.location.href="/dashboard.html";
-});
-
 document.getElementById("logout").addEventListener("click",async()=>{
  try{
   await fetch("/api/logout",{
@@ -578,5 +645,6 @@ control.addEventListener(id==="userSearch"?"input":"change",renderUsers);
 
 loadAdmin();
 </script>
+<script type="module" src="/company-management.js"></script>
 </body>
 </html>
