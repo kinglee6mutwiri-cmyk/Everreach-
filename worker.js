@@ -143,6 +143,9 @@ async function api(request, env) {
             if (password.length < 8)
                 return json({error:"Password must contain at least 8 characters."},400);
 
+            if (body.ageConfirmed !== true)
+                return json({error:"You must confirm that you are at least 18 years old."},400);
+
             const salt = crypto.getRandomValues(new Uint8Array(16));
             const saltText = Array.from(salt,
                 b => b.toString(16).padStart(2,"0")).join("");

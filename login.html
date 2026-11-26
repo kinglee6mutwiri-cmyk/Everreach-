@@ -109,7 +109,7 @@ color:white;font-size:15px;font-weight:700;cursor:pointer;
 
 <div class="switch">
 <span id="switchText">New to EVERREACH?</span>
-<a href="#" id="switchLink">Create Account</a>
+<a href="/signup.html">Create Account</a>
 </div>
 </section>
 
@@ -122,101 +122,64 @@ Play. Learn. Earn. Connect. Grow.<br>
 </main>
 
 <script>
-let mode = "login";
-
 const form = document.getElementById("authForm");
 const password = document.getElementById("password");
 const message = document.getElementById("message");
+const button = document.getElementById("submitBtn");
 
 function notify(text,type){
-message.textContent=text;
-message.className="message "+type;
-message.style.display="block";
+    message.textContent = text;
+    message.className = "message " + type;
+    message.style.display = "block";
 }
 
-document.getElementById("togglePassword").onclick=()=>{
-const visible=password.type==="password";
-password.type=visible?"text":"password";
-document.getElementById("togglePassword").textContent=visible?"HIDE":"SHOW";
+document.getElementById("togglePassword").onclick = () => {
+    const visible = password.type === "password";
+    password.type = visible ? "text" : "password";
+    document.getElementById("togglePassword").textContent =
+        visible ? "HIDE" : "SHOW";
 };
 
-document.getElementById("switchLink").onclick=(event)=>{
-event.preventDefault();
-mode=mode==="login"?"signup":"login";
-
-document.getElementById("heading").textContent=
-mode==="login"?"Welcome Back":"Create Your Account";
-
-document.getElementById("description").textContent=
-mode==="login"?"Sign in to continue your journey with EVERREACH.":"Join EVERREACH and explore endless opportunities.";
-
-document.getElementById("submitBtn").textContent=
-mode==="login"?"Sign In":"Create Account";
-
-document.getElementById("switchText").textContent=
-mode==="login"?"New to EVERREACH?":"Already have an account?";
-
-document.getElementById("switchLink").textContent=
-mode==="login"?"Create Account":"Sign In";
-
-document.getElementById("forgot").style.display=
-mode==="login"?"block":"none";
-
-password.value="";
-password.autocomplete=mode==="login"?"current-password":"new-password";
-message.style.display="none";
+document.getElementById("forgotLink").onclick = (event) => {
+    event.preventDefault();
+    notify(
+        "Password recovery will be connected to the secure authentication service in the next step.",
+        "error"
+    );
 };
 
-document.getElementById("forgotLink").onclick=(event)=>{
-event.preventDefault();
-notify("Password recovery will be connected to the secure authentication service in the next step.","error");
-};
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-form.addEventListener("submit",async(event)=>{
-event.preventDefault();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const pass = password.value;
 
-const button=document.getElementById("submitBtn");
-const email=document.getElementById("email").value.trim();
-const pass=password.value;
+    button.disabled = true;
+    button.textContent = "Please wait...";
 
-button.disabled=true;
-button.textContent="Please wait...";
+    try {
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            credentials: "same-origin",
+            body: JSON.stringify({email, password: pass})
+        });
 
-try{
-    const endpoint=mode==="login"?"/api/login":"/api/signup";
+        const result = await response.json();
 
-    const response=await fetch(endpoint,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        credentials:"same-origin",
-        body:JSON.stringify({email,password:pass})
-    });
-
-    const result=await response.json();
-
-    if(!response.ok){
-        notify(result.error || "Authentication failed.","error");
-    }else if(mode==="signup"){
-        notify("Account created successfully. You can now sign in.","success");
-        mode="login";
-        document.getElementById("heading").textContent="Welcome Back";
-        document.getElementById("description").textContent="Sign in to continue your journey with EVERREACH.";
-        document.getElementById("submitBtn").textContent="Sign In";
-        document.getElementById("switchText").textContent="New to EVERREACH?";
-        document.getElementById("switchLink").textContent="Create Account";
-        document.getElementById("forgot").style.display="block";
-        password.value="";
-    }else{
-        notify("Login successful. Opening your dashboard...","success");
-        window.location.href=result.user.role==="admin"?"/admin.html":"/dashboard.html";
+        if (!response.ok) {
+            notify(result.error || "Login failed.", "error");
+        } else {
+            notify("Login successful. Opening your dashboard...", "success");
+            window.location.href =
+                result.user.role === "admin" ? "/admin.html" : "/dashboard.html";
+        }
+    } catch (error) {
+        notify("Cannot reach EVERREACH. Please try again.", "error");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Sign In";
     }
-}catch(error){
-    notify("Cannot reach the server. Make sure the backend is running.","error");
-}finally{
-    button.disabled=false;
-    if(mode==="login") button.textContent="Sign In";
-    else button.textContent="Create Account";
-}
 });
 </script>
 </body>

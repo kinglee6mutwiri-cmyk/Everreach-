@@ -1,22 +1,167 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Create Account</title>
-<style>body{margin:0;font-family:system-ui;background:linear-gradient(135deg,#7c3aed,#db2777,#f97316);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}.box{background:white;color:#111;padding:28px;border-radius:24px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.3)}input{width:100%;padding:14px;margin:8px 0;border-radius:12px;border:2px solid #e5e7eb;box-sizing:border-box;font-size:15px}button{width:100%;padding:14px;background:linear-gradient(90deg,#7c3aed,#db2777);border:none;border-radius:12px;color:white;font-weight:900;font-size:16px;cursor:pointer}a{color:#7c3aed;font-weight:700;text-decoration:none}.msg{font-size:13px;color:#dc2626;min-height:18px}</style></head>
-<body><div class="box"><h1>EVERREACH</h1><p style="color:#6b7280">Join the world. Play. Learn. Earn.</p><p id="msg" class="msg"></p>
-<input id="name" placeholder="Full Name"><input id="email" placeholder="Email or Phone"><input id="pass" type="password" placeholder="Create Password">
-<button onclick="signup()">CREATE ACCOUNT</button><p style="margin-top:14px"><a href="/login.html">Already have account? Login</a></p></div>
-<script>
-function signup(){
-try{
-let n=document.getElementById('name').value.trim();
-let e=document.getElementById('email').value.trim().toLowerCase();
-let p=document.getElementById('pass').value.trim();
-if(!n||!e||!p){document.getElementById('msg').innerText='Fill all fields';return}
-let users=[];try{users=JSON.parse(localStorage.getItem('everreach_users')||'[]')}catch(err){users=[]}
-if(users.find(u=>u.email===e)){document.getElementById('msg').innerText='You already have account! Going to Login...';setTimeout(()=>{window.location.href='/login.html'},800);return}
-users.push({name:n,email:e,pass:p});
-localStorage.setItem('everreach_users',JSON.stringify(users));
-localStorage.setItem('everreach_session',JSON.stringify({name:n,email:e}));
-localStorage.setItem('everreach_balance','0');
-window.location.href='/';
-}catch(err){document.getElementById('msg').innerText='Error: '+err.message}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d1c">
+<title>Join EVERREACH</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+font-family:Arial,Helvetica,sans-serif;
+min-height:100vh;
+background:radial-gradient(circle at top right,#29205c 0%,transparent 40%),#080d1c;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:22px;
 }
-</script></body></html>
+.container{width:100%;max-width:440px}
+.logo{text-align:center;margin-bottom:25px}
+.logo-mark{
+width:58px;height:58px;border-radius:18px;
+background:linear-gradient(135deg,#7655ff,#20c5c5);
+display:flex;align-items:center;justify-content:center;
+font-size:27px;font-weight:900;margin:0 auto 14px;
+}
+.logo h1{font-size:27px;letter-spacing:3px}
+.logo p{font-size:12px;color:#9da8c4;margin-top:8px;letter-spacing:1px}
+.card{
+background:#111a2e;border:1px solid #293550;
+border-radius:23px;padding:30px 25px;
+}
+.card h2{font-size:25px;margin-bottom:9px}
+.subtitle{font-size:14px;color:#9da8c4;margin-bottom:24px;line-height:1.6}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;color:#dce3f4;margin-bottom:9px}
+.field input{
+width:100%;padding:15px;
+border:1px solid #34415e;border-radius:11px;
+background:#0b1324;color:white;font-size:15px;
+}
+.age{
+display:flex;align-items:flex-start;gap:10px;
+font-size:13px;color:#dce3f4;line-height:1.5;
+margin:8px 0 20px;
+}
+.age input{margin-top:3px}
+.btn{
+width:100%;padding:15px;border:0;border-radius:11px;
+background:linear-gradient(100deg,#7655ff,#5140cf);
+color:white;font-size:15px;font-weight:700;cursor:pointer;
+}
+.btn:disabled{opacity:.6;cursor:wait}
+.message{
+display:none;padding:12px;border-radius:9px;
+font-size:13px;margin-bottom:16px;line-height:1.5;
+}
+.error{background:#481d2a;color:#ffb8c5}
+.success{background:#123a32;color:#9af0ce}
+.switch{text-align:center;font-size:13px;color:#9da8c4;margin-top:22px}
+.switch a{color:#a995ff;text-decoration:none}
+.footer{text-align:center;color:#69758f;font-size:11px;margin-top:22px;line-height:1.8}
+</style>
+</head>
+
+<body>
+<main class="container">
+
+<div class="logo">
+<div class="logo-mark">E</div>
+<h1>EVERREACH</h1>
+<p>ONE WORLD. ENDLESS OPPORTUNITIES.</p>
+</div>
+
+<section class="card">
+<h2>Create Your Account</h2>
+<p class="subtitle">Join EVERREACH and explore opportunities to play, learn, earn, connect and grow.</p>
+
+<div id="message" class="message"></div>
+
+<form id="signupForm">
+<div class="field">
+<label for="email">Email Address</label>
+<input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+</div>
+
+<div class="field">
+<label for="password">Create Password</label>
+<input id="password" type="password" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+</div>
+
+<label class="age">
+<input id="ageConfirmed" type="checkbox" required>
+<span>I confirm that I am 18 years old or above.</span>
+</label>
+
+<button class="btn" id="submitBtn" type="submit">CREATE ACCOUNT</button>
+</form>
+
+<div class="switch">
+Already have an account?
+<a href="/login.html">Sign In</a>
+</div>
+</section>
+
+<div class="footer">
+EVERREACH TECHNOLOGIES<br>
+Play. Learn. Earn. Connect. Grow.<br>
+© 2026 EVERREACH. All rights reserved.
+</div>
+
+</main>
+
+<script>
+const form = document.getElementById("signupForm");
+const message = document.getElementById("message");
+const button = document.getElementById("submitBtn");
+
+function notify(text,type){
+message.textContent = text;
+message.className = "message " + type;
+message.style.display = "block";
+}
+
+form.addEventListener("submit",async(event)=>{
+event.preventDefault();
+
+const email = document.getElementById("email").value.trim().toLowerCase();
+const password = document.getElementById("password").value;
+const ageConfirmed = document.getElementById("ageConfirmed").checked;
+
+if(!ageConfirmed){
+notify("You must confirm that you are at least 18 years old.","error");
+return;
+}
+
+button.disabled = true;
+button.textContent = "PLEASE WAIT...";
+
+try{
+const response = await fetch("/api/signup",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+credentials:"same-origin",
+body:JSON.stringify({email,password,ageConfirmed})
+});
+
+const result = await response.json();
+
+if(!response.ok){
+notify(result.error || "Account creation failed.","error");
+}else{
+notify("Account created successfully. You can now sign in.","success");
+form.reset();
+}
+}catch(error){
+notify("Cannot reach EVERREACH. Please try again.","error");
+}finally{
+button.disabled = false;
+button.textContent = "CREATE ACCOUNT";
+}
+});
+</script>
+</body>
+</html>
