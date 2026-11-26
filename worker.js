@@ -105,6 +105,22 @@ async function requireAdmin(request, db) {
   return {authorized:true,user};
 }
 
+async function logActivity(db, actorEmail, targetEmail, eventType, details = null) {
+  try {
+    await db.prepare(
+      "INSERT INTO activity_logs (actor_email, target_email, event_type, details, created_at) VALUES (?, ?, ?, ?, ?)"
+    ).bind(
+      actorEmail || null,
+      targetEmail || null,
+      eventType,
+      details,
+      new Date().toISOString()
+    ).run();
+  } catch (error) {
+    console.error("Activity logging failed:", error);
+  }
+}
+
 async function api(request, env) {
     const path = new URL(request.url).pathname;
     const db = env.DB;
@@ -160,11 +176,21 @@ async function api(request, env) {
                 "SELECT email,password_hash,role,status FROM users WHERE email = ?"
             ).bind(email).first();
 
-            if (!user)
-                return json({error:"Incorrect email or password."},401);
+            if (!user) {
 
-    if (user.status !== "active")
+              await logActivity(db, email, email, "login_failed", "Account not found");
+
+              return json({error:"Incorrect email or password."},401);
+
+            }
+
+    if (user.status !== "active") {
+
+      await logActivity(db, email, email, "login_blocked", "Account suspended");
+
       return json({error:"Your account is suspended. Contact support."},403);
+
+    }
 
             const parts = user.password_hash.split(":");
             if (parts.length !== 2)
@@ -175,8 +201,13 @@ async function api(request, env) {
             );
             const actual = await hashPassword(password,salt);
 
-            if (actual !== parts[1])
-                return json({error:"Incorrect email or password."},401);
+            if (actual !== parts[1]) {
+
+              await logActivity(db, email, email, "login_failed", "Incorrect password");
+
+              return json({error:"Incorrect email or password."},401);
+
+            }
 
             const value = token();
             const tokenHash = await digest(value);
@@ -189,6 +220,7 @@ async function api(request, env) {
     await db.prepare(
       "UPDATE users SET last_login = ? WHERE email = ?"
     ).bind(new Date().toISOString(),email).run();
+    await logActivity(db, email, email, "login_success", "Successful login");
 
             return json({
                 ok:true,
@@ -251,6 +283,7 @@ async function api(request, env) {
       "DELETE FROM sessions WHERE email = ?"
     ).bind(email).run();
 
+      await logActivity(db, access.user.email, email, "user_suspended", "Administrator suspended user account");
     return json({ok:true,message:"User account suspended."});
   } catch (error) {
     console.error(error);
@@ -278,6 +311,7 @@ if (path === "/api/admin/users/unsuspend" && request.method === "POST") {
       return json({error:"Suspended user not found or account is already active."},404);
     }
 
+      await logActivity(db, access.user.email, email, "user_reactivated", "Administrator reactivated user account");
     return json({ok:true,message:"User account reactivated."});
   } catch (error) {
     console.error(error);
@@ -317,6 +351,14 @@ if (path === "/api/admin/me" && request.method === "GET") {
     if (path === "/api/logout" && request.method === "POST") {
         try {
             const value = cookie(request);
+
+            if (value) {
+              const sessionHash = await digest(value);
+              const session = await db.prepare(
+                "SELECT email FROM sessions WHERE token_hash = ?"
+              ).bind(sessionHash).first();
+              if (session) await logActivity(db, session.email, session.email, "logout_success", "User signed out");
+            }
             if (value) {
                 await db.prepare(
                     "DELETE FROM sessions WHERE token_hash = ?"
