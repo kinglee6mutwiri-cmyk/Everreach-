@@ -171,6 +171,28 @@ padding:15px;
  <div id="users">Loading users...</div>
 </section>
 
+<section class="card">
+<h2>Activity &amp; Security Log</h2>
+<p>Latest 100 recorded account and administrator events.</p>
+<div class="filters">
+<input id="activitySearch" type="search" placeholder="Search email or event">
+<select id="activityType">
+<option value="all">All events</option>
+<option value="login_success">Successful logins</option>
+<option value="login_failed">Failed logins</option>
+<option value="login_blocked">Blocked logins</option>
+<option value="logout_success">Logouts</option>
+<option value="user_suspended">User suspensions</option>
+<option value="user_reactivated">User reactivations</option>
+</select>
+</div>
+<p id="activityCount">Loading activity...</p>
+<div id="activityLogs">Loading security records...</div>
+<div class="actions">
+<button class="secondary" id="refreshActivity">Refresh Activity</button>
+</div>
+</section>
+
 <script>
 const statusEl=document.getElementById("status");
 
@@ -237,6 +259,7 @@ throw new Error(data.error||"Account update failed.");
 
 alert(data.message||"Account updated successfully.");
 await loadUsers();
+await loadActivity();
 
 }catch(error){
 alert(error.message);
@@ -352,6 +375,131 @@ renderUsers();
   container.textContent=error.message;
  }
 }
+
+
+let allActivities=[];
+
+const eventLabels={
+  login_success:"Successful login",
+  login_failed:"Failed login",
+  login_blocked:"Blocked login",
+  logout_success:"Logout",
+  user_suspended:"User suspended",
+  user_reactivated:"User reactivated"
+};
+
+function renderActivity(){
+  const container=document.getElementById("activityLogs");
+  const search=document.getElementById("activitySearch").value.trim().toLowerCase();
+  const type=document.getElementById("activityType").value;
+
+  const filtered=allActivities.filter(item=>{
+    const searchable=[
+      item.actor_email,
+      item.target_email,
+      item.event_type,
+      item.details
+    ].join(" ").toLowerCase();
+
+    return searchable.includes(search)
+      &&(type==="all"||item.event_type===type);
+  });
+
+  document.getElementById("activityCount").textContent=
+    filtered.length+" of "+allActivities.length+" records displayed.";
+
+  if(filtered.length===0){
+    container.textContent="No matching activity records found.";
+    return;
+  }
+
+  const table=document.createElement("table");
+  const thead=document.createElement("thead");
+  const headRow=document.createElement("tr");
+
+  ["Date and Time","Actor","Affected Account","Event","Details"].forEach(label=>{
+    const th=document.createElement("th");
+    th.textContent=label;
+    headRow.appendChild(th);
+  });
+
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody=document.createElement("tbody");
+
+  filtered.forEach(item=>{
+    const row=document.createElement("tr");
+    const date=new Date(item.created_at);
+    const timestamp=Number.isNaN(date.getTime())
+      ? item.created_at||""
+      : date.toLocaleString();
+
+    [
+      timestamp,
+      item.actor_email||"System",
+      item.target_email||"—",
+      eventLabels[item.event_type]||item.event_type||"Unknown",
+      item.details||"—"
+    ].forEach(value=>{
+      const cell=document.createElement("td");
+      cell.textContent=value;
+      row.appendChild(cell);
+    });
+
+    tbody.appendChild(row);
+  });
+
+  table.appendChild(tbody);
+
+  const wrapper=document.createElement("div");
+  wrapper.className="table-wrap";
+  wrapper.appendChild(table);
+
+  container.replaceChildren(wrapper);
+}
+
+async function loadActivity(){
+  const container=document.getElementById("activityLogs");
+  container.textContent="Loading security records...";
+
+  try{
+    const response=await fetch("/api/admin/activity",{
+      credentials:"same-origin",
+      cache:"no-store"
+    });
+
+    const data=await response.json();
+
+    if(response.status===401){
+      window.location.replace("/login.html");
+      return;
+    }
+
+    if(response.status===403){
+      window.location.replace("/dashboard.html");
+      return;
+    }
+
+    if(!response.ok||!data.ok){
+      throw new Error(data.error||"Could not retrieve activity records.");
+    }
+
+    allActivities=data.activities||[];
+    renderActivity();
+  }catch(error){
+    container.textContent=error.message;
+    document.getElementById("activityCount").textContent=
+      "Activity records unavailable.";
+  }
+}
+
+document.getElementById("refreshActivity").addEventListener("click",loadActivity);
+
+["activitySearch","activityType"].forEach(id=>{
+  const control=document.getElementById(id);
+  control.addEventListener(id==="activitySearch"?"input":"change",renderActivity);
+});
 
 document.getElementById("refresh").addEventListener("click",loadAdmin);
 

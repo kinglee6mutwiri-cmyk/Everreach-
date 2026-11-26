@@ -319,6 +319,26 @@ if (path === "/api/admin/users/unsuspend" && request.method === "POST") {
   }
 }
 
+if (path === "/api/admin/activity" && request.method === "GET") {
+  try {
+    const access = await requireAdmin(request, db);
+    if (!access.authorized) return access.response;
+
+    const result = await db.prepare(
+      "SELECT id, actor_email, target_email, event_type, details, created_at FROM activity_logs ORDER BY created_at DESC, id DESC LIMIT 100"
+    ).all();
+
+    return json({
+      ok:true,
+      activities:result.results || [],
+      count:(result.results || []).length
+    });
+  } catch (error) {
+    console.error(error);
+    return json({error:"Could not retrieve activity logs."},500);
+  }
+}
+
 if (path === "/api/admin/me" && request.method === "GET") {
     try {
       const access = await requireAdmin(request, db);
