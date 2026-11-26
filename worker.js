@@ -417,5 +417,25 @@ export default {
             console.error(error);
             return json({error:"Internal server error."},500);
         }
+    },
+
+  async scheduled(controller, env, ctx) {
+    const cutoff = new Date(
+      Date.now() - 24 * 60 * 60 * 1000
+    ).toISOString();
+
+    try {
+      const result = await env.DB.prepare(
+        "DELETE FROM activity_logs WHERE created_at < ?"
+      ).bind(cutoff).run();
+
+      console.log(
+        "Activity cleanup completed. Deleted records:",
+        result.meta?.changes || 0
+      );
+    } catch (error) {
+      console.error("Activity cleanup failed:", error);
+      throw error;
     }
+  }
 };
