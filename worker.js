@@ -333,7 +333,35 @@ async function api(request, env) {
 
             }
 
-            const value = token();
+            if (user.role === "company") {
+        const company = await db.prepare(
+            "SELECT verification_status FROM companies WHERE owner_email = ?"
+        ).bind(email).first();
+
+        if (!company || company.verification_status !== "approved") {
+            const status = company?.verification_status || "missing";
+            const messages = {
+                pending: "Your company application is awaiting administrator approval.",
+                rejected: "Your company application was rejected. Please contact support.",
+                suspended: "Your company account is suspended. Please contact support.",
+                missing: "Company profile not found. Please contact support."
+            };
+
+            await logActivity(
+                db,
+                email,
+                email,
+                "company_login_blocked",
+                "Company login blocked: " + status
+            );
+
+            return json({
+                error: messages[status] || "Your company account is not approved."
+            },403);
+        }
+    }
+
+    const value = token();
             const tokenHash = await digest(value);
             const expires = Math.floor(Date.now()/1000) + SESSION_SECONDS;
 
@@ -660,6 +688,18 @@ if (path === "/api/admin/me" && request.method === "GET") {
         return json({error:"Company profile not found."},404);
       }
 
+      if (result.verification_status !== "approved") {
+        const messages = {
+          pending: "Your company application is awaiting administrator approval.",
+          rejected: "Your company application was rejected. Please contact support.",
+          suspended: "Your company account is suspended. Please contact support."
+        };
+
+        return json({
+          error: messages[result.verification_status] || "Your company account is not approved."
+        },403);
+      }
+
       return json({
         ok:true,
         company:result
@@ -733,6 +773,16 @@ export default {
               new URL("/login.html", request.url), 302
             );
           }
+        const company = await env.DB.prepare(
+          "SELECT verification_status FROM companies WHERE owner_email = ?"
+        ).bind(user.email).first();
+
+        if (!company || company.verification_status !== "approved") {
+          return Response.redirect(
+            new URL("/login.html", request.url), 302
+          );
+        }
+
         }
 
       return await env.ASSETS.fetch(request);
