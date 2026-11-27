@@ -309,9 +309,10 @@ grid-template-columns:1fr;
   <p>Technology Control Center</p>
  </div>
  <div class="actions">
-    <button class="secondary" id="refresh">Refresh</button>
-  <button class="danger" id="logout">Log out</button>
- </div>
+<button class="secondary" id="userDashboard" type="button">User Dashboard</button>
+<button class="secondary" id="refresh">Refresh</button>
+<button class="danger" id="logout">Log out</button>
+</div>
 </header>
 
 <section class="admin-bar">
@@ -782,6 +783,8 @@ document.getElementById("refreshActivity").addEventListener("click",loadActivity
 });
 
 document.getElementById("refresh").addEventListener("click",loadAdmin);
+
+document.getElementById("userDashboard").addEventListener("click",()=>window.location.href="/dashboard.html");
 
 document.getElementById("logout").addEventListener("click",async()=>{
  try{
