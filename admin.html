@@ -300,6 +300,7 @@ grid-template-columns:1fr;
 }
 
 #userManagementContent[hidden]{display:none!important;}
+#activityContent[hidden]{display:none!important;}
 </style>
 </head>
 <body>
@@ -409,7 +410,12 @@ grid-template-columns:1fr;
 
 <section class="card">
 <h2>Activity &amp; Security Log</h2>
-<p>Latest 100 recorded account and administrator events.</p>
+<p>Security records of account and administrator events.</p>
+<button class="secondary" id="toggleActivity" type="button"
+aria-expanded="false" aria-controls="activityContent">
+View Activity Log
+</button>
+<div id="activityContent" hidden>
 <div class="activity-toolbar">
 <input id="activitySearch" type="search" placeholder="Search email or event">
 <select id="activityType">
@@ -423,9 +429,9 @@ grid-template-columns:1fr;
 </select>
 <button class="secondary" id="refreshActivity" type="button">Refresh Activity</button>
 </div>
-<p id="activityCount">Loading activity...</p>
-<div id="activityLogs">Loading security records...</div>
-
+<p id="activityCount">Open the activity log to load records.</p>
+<div id="activityLogs">Activity records will load when opened.</div>
+</div>
 </section>
 
 <script>
@@ -782,6 +788,18 @@ async function loadActivity(){
       "Activity records unavailable.";
   }
 }
+
+
+const toggleActivityButton=document.getElementById("toggleActivity");
+const activityContent=document.getElementById("activityContent");
+
+toggleActivityButton.addEventListener("click",()=>{
+  const opening=activityContent.hidden;
+  activityContent.hidden=!opening;
+  toggleActivityButton.textContent=opening?"Close Activity Log":"View Activity Log";
+  toggleActivityButton.setAttribute("aria-expanded",String(opening));
+  if(opening)loadActivity();
+});
 
 document.getElementById("refreshActivity").addEventListener("click",loadActivity);
 
