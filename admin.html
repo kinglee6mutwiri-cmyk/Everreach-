@@ -299,6 +299,7 @@ grid-template-columns:1fr;
 }
 }
 
+#userManagementContent[hidden]{display:none!important;}
 </style>
 </head>
 <body>
@@ -383,7 +384,13 @@ grid-template-columns:1fr;
 <section class="card">
  <h2>Registered Users</h2>
  <p>Latest registered accounts. Maximum 200 records per request.</p>
-  <div class="filters">
+
+  <button class="secondary" id="toggleUsers" type="button"
+    aria-expanded="false" aria-controls="userManagementContent">
+    View All Users
+  </button>
+  <div id="userManagementContent" hidden>
+<div class="filters">
     <input id="userSearch" type="search" placeholder="Search users by email">
     <select id="statusFilter">
       <option value="all">All statuses</option>
@@ -397,6 +404,7 @@ grid-template-columns:1fr;
     </select>
   </div>
  <div id="users">Loading users...</div>
+  </div>
 </section>
 
 <section class="card">
@@ -780,6 +788,17 @@ document.getElementById("refreshActivity").addEventListener("click",loadActivity
 ["activitySearch","activityType"].forEach(id=>{
   const control=document.getElementById(id);
   control.addEventListener(id==="activitySearch"?"input":"change",renderActivity);
+});
+
+
+const toggleUsersButton=document.getElementById("toggleUsers");
+const userManagementContent=document.getElementById("userManagementContent");
+
+toggleUsersButton.addEventListener("click",()=>{
+  const opening=userManagementContent.hidden;
+  userManagementContent.hidden=!opening;
+  toggleUsersButton.textContent=opening?"Close Users":"View All Users";
+  toggleUsersButton.setAttribute("aria-expanded",String(opening));
 });
 
 document.getElementById("refresh").addEventListener("click",loadAdmin);
