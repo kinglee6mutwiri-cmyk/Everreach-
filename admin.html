@@ -7,196 +7,296 @@
 <style>
 *{box-sizing:border-box}
 body{
- margin:0;
- padding:20px;
- font-family:system-ui,Arial,sans-serif;
- background:#0f172a;
- color:white;
+  margin:0;
+  padding:24px;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#1e293b;
+  background:linear-gradient(135deg,#e0f2fe 0%,#f8fafc 50%,#bae6fd 100%);
+  min-height:100vh;
 }
 header{
- display:flex;
- justify-content:space-between;
- align-items:center;
- flex-wrap:wrap;
- gap:15px;
- margin-bottom:25px;
+  max-width:1200px;
+  margin:0 auto 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
 }
-h1{font-size:25px;margin:0}
-h2{font-size:19px}
-p{color:#94a3b8}
-.card{
- background:#1e293b;
- border:1px solid #334155;
- border-radius:14px;
- padding:20px;
- margin-bottom:18px;
-}
-.stats{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
- gap:15px;
-}
-.stat{
- background:#0f172a;
- padding:18px;
- border-radius:12px;
-}
-.stat strong{
- display:block;
- font-size:27px;
- margin-top:8px;
-}
+header h1{margin:0;color:#075985;font-size:26px}
+header p{margin:6px 0 0;color:#64748b}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 button{
- border:0;
- border-radius:8px;
- padding:11px 16px;
- background:#2563eb;
- color:white;
- font-weight:600;
- cursor:pointer;
+  border:0;
+  border-radius:10px;
+  padding:11px 16px;
+  font-weight:700;
+  cursor:pointer;
 }
-button.secondary{background:#475569}
-button.danger{background:#dc2626}
-.actions{display:flex;gap:10px;flex-wrap:wrap}
-.table-wrap{overflow-x:auto}
-table{
- width:100%;
- border-collapse:collapse;
- min-width:450px;
+button:disabled{opacity:.55;cursor:not-allowed}
+.secondary{background:#e0f2fe;color:#075985}
+.danger{background:#dc2626;color:white}
+main,.container{
+  max-width:1200px;
+  margin:0 auto;
 }
-th,td{
- padding:13px 10px;
- text-align:left;
- border-bottom:1px solid #334155;
- font-size:14px;
+.card,.admin-bar,.stat{
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(15,23,42,.07);
 }
-th{color:#94a3b8}
-.status{margin-top:12px}
-#users{margin-top:15px}
-.filters{
-display:grid;
-grid-template-columns:2fr 1fr 1fr;
-gap:12px;
-margin:18px 0;
+.admin-bar{
+  display:grid;
+  grid-template-columns:1fr 1.3fr;
+  gap:22px;
+  align-items:center;
+  padding:22px;
+  margin-bottom:18px;
 }
-.filters input,
-.filters select{
-width:100%;
-min-width:0;
-padding:12px;
-border:1px solid #475569;
-border-radius:8px;
-background:#0f172a;
-color:white;
-font:inherit;
-}
-.filters input::placeholder{
-color:#94a3b8;
-}
-button:disabled{
-opacity:.55;
-cursor:not-allowed;
-}
-.table-wrap{
-width:100%;
-overflow-x:auto;
-}
-table{
-min-width:700px;
-}
-td{
-overflow-wrap:anywhere;
-}
-@media(max-width:650px){
-.filters{
-grid-template-columns:1fr;
-}
-.card{
-padding:15px;
-}
-}
-@media(max-width:500px){
- body{padding:14px}
- h1{font-size:21px}
-}
-
-.portal-links{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-gap:12px;
-margin-top:18px;
-}
+.admin-identity h2,.card h2{margin:0 0 10px;color:#0f172a}
+.admin-identity p{margin:7px 0;color:#64748b;overflow-wrap:anywhere}
+.status{font-weight:700;color:#0284c7}
+.portal-area h2{margin:0 0 12px;font-size:17px}
+.portal-links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .portal-link{
-display:block;
-padding:15px;
-border:1px solid #475569;
-border-radius:10px;
-background:#0f172a;
-color:#e2e8f0;
-text-decoration:none;
-font-weight:600;
-}
-.portal-link:hover{
-border-color:#38bdf8;
-background:#172554;
+  display:block;
+  padding:14px;
+  border-radius:12px;
+  background:#f0f9ff;
+  border:1px solid #bae6fd;
+  color:#075985;
+  font-weight:700;
+  text-decoration:none;
 }
 .portal-link span{
-display:block;
-margin-top:5px;
-font-size:12px;
-font-weight:400;
-color:#94a3b8;
+  display:block;
+  margin-top:6px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:400;
 }
-
-
-.company-management{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:16px;
-margin-top:20px;
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+  margin-bottom:18px;
+}
+.stat{padding:20px}
+.stat p{margin:0 0 10px;color:#64748b;font-weight:600}
+.stat strong{font-size:27px;color:#0369a1}
+.card{padding:22px;margin-bottom:18px;min-width:0}
+.card>p{color:#64748b;margin:0 0 16px}
+.company-management{display:block}
+.company-tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:3px 2px 12px;
+  margin-bottom:12px;
+}
+.company-tab{
+  flex:1 0 auto;
+  background:#f1f5f9;
+  color:#475569;
+  border:1px solid #e2e8f0;
+  white-space:nowrap;
+}
+.company-tab.active{
+  background:#0284c7;
+  color:white;
+  border-color:#0284c7;
 }
 .company-panel{
-padding:18px;
-border-radius:13px;
-border:1px solid #475569;
-background:linear-gradient(145deg,#1e293b,#0f172a);
-min-width:0;
+  display:none;
+  padding:16px;
+  border:1px solid #e2e8f0;
+  border-radius:13px;
+  background:rgba(255,255,255,.75);
 }
-.company-panel.pending{border-top:4px solid #f59e0b}
-.company-panel.approved{border-top:4px solid #10b981}
-.company-panel.rejected{border-top:4px solid #ef4444}
-.company-panel.suspended{border-top:4px solid #a78bfa}
-.company-panel h3{margin-top:0}
-.company-list{margin-top:15px}
-.company-item{
-padding:14px;
-margin-top:12px;
-border:1px solid #475569;
-border-radius:10px;
-background:#0b1220;
-overflow-wrap:anywhere;
-}
-.company-item p{margin:7px 0;font-size:13px}
-.company-actions{
-display:flex;
-flex-wrap:wrap;
-gap:9px;
-margin-top:12px;
-}
-.company-actions button{font-size:13px}
-.approve-btn{background:#059669}
-.reject-btn{background:#dc2626}
-.company-empty{font-size:13px;color:#94a3b8}
+.company-panel.active{display:block}
+.company-panel h3{margin:0 0 8px;color:#0f172a}
+.company-panel>p{margin:0 0 14px;color:#64748b;font-size:13px}
 .company-count{
-display:inline-block;
-padding:4px 10px;
-border-radius:20px;
-background:#334155;
-margin-left:6px;
-font-size:12px;
+  display:inline-block;
+  padding:3px 9px;
+  border-radius:20px;
+  background:#e0f2fe;
+  color:#075985;
+  font-size:12px;
 }
-@media(max-width:600px){
-.company-management{grid-template-columns:1fr}
+.company-list{display:grid;gap:12px;min-width:0}
+.company-list>div,.company-list article{
+  overflow-wrap:anywhere;
+}
+.filters{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:16px 0;
+}
+.filters input{grid-column:1/-1}
+input,select{
+  width:100%;
+  min-width:0;
+  padding:12px;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  background:white;
+  color:#1e293b;
+  font:inherit;
+}
+input:focus,select:focus{
+  outline:2px solid #7dd3fc;
+  border-color:#0284c7;
+}
+#users,#activityLogs{width:100%;overflow-x:auto}
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:rgba(255,255,255,.7);
+  border-radius:12px;
+  overflow:hidden;
+}
+th,td{
+  padding:12px;
+  border-bottom:1px solid #e2e8f0;
+  text-align:left;
+  vertical-align:top;
+  font-size:13px;
+}
+th{background:#f0f9ff;color:#075985}
+td{color:#334155}
+td button{margin:2px}
+.pill,.role-pill,.status-pill{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+  background:#e0f2fe;
+  color:#075985;
+}
+.status-pill.suspended{background:#fee2e2;color:#b91c1c}
+.status-pill.active{background:#dcfce7;color:#166534}
+.role-pill.admin{background:#ede9fe;color:#6d28d9}
+.activity-toolbar{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(160px,.55fr) auto;
+  gap:10px;
+  align-items:center;
+  margin:16px 0;
+}
+#activityCount{color:#64748b;font-size:13px}
+.skeleton{
+  height:13px;
+  margin:12px 0;
+  border-radius:8px;
+  background:linear-gradient(90deg,#e2e8f0,#f8fafc,#e2e8f0);
+  background-size:200% 100%;
+  animation:shimmer 1.3s infinite;
+}
+@keyframes shimmer{to{background-position:-200% 0}}
+@media(max-width:700px){
+  body{padding:14px}
+  header{align-items:flex-start}
+  header h1{font-size:21px}
+  .admin-bar{grid-template-columns:1fr;padding:17px}
+  .portal-links{grid-template-columns:1fr 1fr}
+  .card{padding:16px}
+  .company-tabs{gap:6px}
+  .company-tab{padding:10px 12px}
+  .activity-toolbar{grid-template-columns:1fr 1fr}
+  .activity-toolbar input{grid-column:1/-1}
+  .activity-toolbar button{grid-column:1/-1}
+  #users table,#activityLogs table{min-width:680px}
+}
+@media(max-width:430px){
+  body{padding:10px}
+  header{flex-direction:column}
+  header .actions{width:100%}
+  header .actions button{flex:1}
+  .portal-links{grid-template-columns:1fr}
+  .stats{gap:10px}
+  .stat{padding:15px}
+  .stat strong{font-size:22px}
+}
+
+/* Registered user account display */
+.user-email{
+display:block;
+max-width:100%;
+white-space:nowrap;
+overflow-x:auto;
+}
+.role-pill,.status-pill{
+display:inline-block;
+padding:5px 10px;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+text-transform:capitalize;
+}
+.role-pill{background:#e0f2fe;color:#075985;}
+.status-pill.is-active{background:#dcfce7;color:#166534;}
+.status-pill.is-suspended{background:#fee2e2;color:#991b1b;}
+
+@media(max-width:700px){
+#users .user-table{
+width:100%;
+min-width:0;
+border-collapse:separate;
+border-spacing:0 12px;
+}
+#users .user-table thead{display:none;}
+#users .user-table tbody{display:block;width:100%;}
+#users .user-table tbody tr{
+display:block;
+width:100%;
+box-sizing:border-box;
+margin-bottom:12px;
+padding:8px 12px;
+background:#fff;
+border:1px solid #dbeafe;
+border-radius:14px;
+}
+#users .user-table tbody td{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+width:100%;
+box-sizing:border-box;
+padding:9px 2px;
+border:0;
+text-align:right;
+}
+#users .user-table tbody td::before{
+content:attr(data-label);
+flex:0 0 92px;
+text-align:left;
+color:#64748b;
+font-size:12px;
+font-weight:700;
+}
+#users .user-table tbody td.user-email-cell{
+display:block;
+text-align:left;
+}
+#users .user-table tbody td.user-email-cell::before{
+display:block;
+margin-bottom:6px;
+}
+#users .user-table tbody td:last-child{
+justify-content:flex-end;
+}
+#users .user-table tbody td:last-child::before{
+margin-right:auto;
+}
+.activity-toolbar{
+grid-template-columns:1fr;
+}
 }
 
 </style>
@@ -214,67 +314,69 @@ font-size:12px;
  </div>
 </header>
 
-<section class="card">
- <h2>Administrator Account</h2>
- <p id="adminEmail">Verifying administrator access...</p>
- <p id="status" class="status">Connecting securely...</p>
-</section>
-
-<section class="card">
+<section class="admin-bar">
+<div class="admin-identity">
+<h2>Administrator Account</h2>
+<p id="adminEmail">Verifying administrator access...</p>
+<p id="status" class="status">Connecting securely...</p>
+</div>
+<div class="portal-area">
 <h2>EVERREACH Portal Access</h2>
-<p>Access the public website and company registration portal.</p>
 <div class="portal-links">
-<a class="portal-link" href="/" target="_blank">Public Homepage
+<a class="portal-link" href="/" target="_blank" rel="noopener">Public Homepage
 <span>Main EVERREACH website</span></a>
-<a class="portal-link" href="/company-signup.html" target="_blank">Company Registration
+<a class="portal-link" href="/company-signup.html" target="_blank" rel="noopener">Company Registration
 <span>Register a business account</span></a>
+</div>
 </div>
 </section>
 
+<section class="stats">
+<div class="stat">
+<p>Registered Users</p>
+<strong id="userCount">---</strong>
+</div>
+<div class="stat">
+<p>Control Center</p>
+<strong>ACTIVE</strong>
+</div>
+</section>
 
 <section class="card">
 <h2>Company Management Center</h2>
 <p>Review applications and manage the verification status of registered companies.</p>
-
 <div class="company-management">
+<div class="company-tabs" role="tablist" aria-label="Company application status">
+<button type="button" class="company-tab active" data-company-tab="pending" aria-selected="true">Pending</button>
+<button type="button" class="company-tab" data-company-tab="approved" aria-selected="false">Approved</button>
+<button type="button" class="company-tab" data-company-tab="rejected" aria-selected="false">Rejected</button>
+<button type="button" class="company-tab" data-company-tab="suspended" aria-selected="false">Suspended</button>
+</div>
 
-<div class="company-panel pending">
+<div class="company-panel pending active" data-company-panel="pending">
 <h3>Pending Applications <span class="company-count" id="pendingCount">0</span></h3>
 <p>Companies waiting for administrator review.</p>
 <div class="company-list" id="pendingCompanies">Loading applications...</div>
 </div>
 
-<div class="company-panel approved">
-<h3>Approved & Active <span class="company-count" id="approvedCount">0</span></h3>
+<div class="company-panel approved" data-company-panel="approved">
+<h3>Approved &amp; Active <span class="company-count" id="approvedCount">0</span></h3>
 <p>Verified companies allowed to submit campaigns for approval.</p>
 <div class="company-list" id="approvedCompanies">Loading companies...</div>
 </div>
 
-<div class="company-panel rejected">
+<div class="company-panel rejected" data-company-panel="rejected">
 <h3>Rejected Applications <span class="company-count" id="rejectedCount">0</span></h3>
 <p>Companies whose applications were rejected.</p>
 <div class="company-list" id="rejectedCompanies">Loading companies...</div>
 </div>
 
-<div class="company-panel suspended">
+<div class="company-panel suspended" data-company-panel="suspended">
 <h3>Suspended Companies <span class="company-count" id="suspendedCount">0</span></h3>
 <p>Companies whose platform access has been suspended.</p>
 <div class="company-list" id="suspendedCompanies">Loading companies...</div>
 </div>
-
 </div>
-</section>
-
-
-<section class="stats">
- <div class="stat">
-  <p>Registered Users</p>
-  <strong id="userCount">--</strong>
- </div>
- <div class="stat">
-  <p>Control Center</p>
-  <strong>ACTIVE</strong>
- </div>
 </section>
 
 <section class="card">
@@ -299,7 +401,7 @@ font-size:12px;
 <section class="card">
 <h2>Activity &amp; Security Log</h2>
 <p>Latest 100 recorded account and administrator events.</p>
-<div class="filters">
+<div class="activity-toolbar">
 <input id="activitySearch" type="search" placeholder="Search email or event">
 <select id="activityType">
 <option value="all">All events</option>
@@ -310,12 +412,11 @@ font-size:12px;
 <option value="user_suspended">User suspensions</option>
 <option value="user_reactivated">User reactivations</option>
 </select>
+<button class="secondary" id="refreshActivity" type="button">Refresh Activity</button>
 </div>
 <p id="activityCount">Loading activity...</p>
 <div id="activityLogs">Loading security records...</div>
-<div class="actions">
-<button class="secondary" id="refreshActivity">Refresh Activity</button>
-</div>
+
 </section>
 
 <script>
@@ -393,15 +494,32 @@ alert(error.message);
 
 let allUsers=[];
 
+function formatAdminDate(value){
+if(!value)return "Never";
+const date=new Date(value);
+if(Number.isNaN(date.getTime()))return String(value);
+return date.toLocaleDateString("en-US",{
+month:"short",day:"numeric",year:"numeric"
+});
+}
+
+function showLoadingSkeleton(container,count=4){
+container.replaceChildren();
+for(let i=0;i<count;i++){
+const bar=document.createElement("div");
+bar.className="skeleton";
+container.appendChild(bar);
+}
+}
+
 function renderUsers(){
 const container=document.getElementById("users");
-
 const search=document.getElementById("userSearch").value.trim().toLowerCase();
 const status=document.getElementById("statusFilter").value;
 const role=document.getElementById("roleFilter").value;
 
 const filtered=allUsers.filter(user=>{
-return user.email.toLowerCase().includes(search)
+return String(user.email||"").toLowerCase().includes(search)
 &&(status==="all"||user.status===status)
 &&(role==="all"||user.role===role);
 });
@@ -410,13 +528,14 @@ if(allUsers.length===0){
 container.textContent="No registered users found.";
 return;
 }
-
 if(filtered.length===0){
 container.textContent="No users match your search or filters.";
 return;
 }
 
 const table=document.createElement("table");
+table.className="user-table";
+
 const thead=document.createElement("thead");
 const headRow=document.createElement("tr");
 
@@ -434,21 +553,57 @@ const tbody=document.createElement("tbody");
 filtered.forEach(user=>{
 const row=document.createElement("tr");
 
-[user.email,user.role,user.status,user.created_at,user.last_login?new Date(user.last_login).toLocaleString():"Never"].forEach(value=>{
+const emailCell=document.createElement("td");
+emailCell.dataset.label="Email";
+emailCell.className="user-email-cell";
+const email=document.createElement("span");
+email.className="user-email";
+email.textContent=user.email||"-";
+emailCell.appendChild(email);
+row.appendChild(emailCell);
+
+const roleCell=document.createElement("td");
+roleCell.dataset.label="Role";
+const rolePill=document.createElement("span");
+rolePill.className="role-pill";
+rolePill.textContent=user.role||"user";
+roleCell.appendChild(rolePill);
+row.appendChild(roleCell);
+
+const statusCell=document.createElement("td");
+statusCell.dataset.label="Status";
+const statusPill=document.createElement("span");
+statusPill.className="status-pill "+
+(user.status==="suspended"?"is-suspended":"is-active");
+statusPill.textContent=user.status||"unknown";
+statusCell.appendChild(statusPill);
+row.appendChild(statusCell);
+
+[
+["Registered",formatAdminDate(user.created_at)],
+["Last Login",formatAdminDate(user.last_login)]
+].forEach(([label,value])=>{
 const cell=document.createElement("td");
-cell.textContent=value||"-";
+cell.dataset.label=label;
+cell.textContent=value;
 row.appendChild(cell);
 });
 
 const actionCell=document.createElement("td");
+actionCell.dataset.label="Action";
 const actionButton=document.createElement("button");
-
-actionButton.textContent=user.role==="admin"?"Protected":user.status==="suspended"?"Unsuspend":"Suspend";
-actionButton.className=user.status==="suspended"?"secondary":"danger";
+actionButton.type="button";
+actionButton.textContent=
+user.role==="admin"?"Protected":
+user.status==="suspended"?"Unsuspend":"Suspend";
+actionButton.className=
+user.status==="suspended"?"secondary":"danger";
 actionButton.disabled=user.role==="admin";
 
 if(user.role!=="admin"){
-actionButton.addEventListener("click",()=>manageUser(user.email,user.status));
+actionButton.addEventListener("click",()=>{
+manageUser(user.email,user.status);
+});
 }
 
 actionCell.appendChild(actionButton);
@@ -457,8 +612,8 @@ tbody.appendChild(row);
 });
 
 table.appendChild(tbody);
-
 container.replaceChildren();
+
 const wrapper=document.createElement("div");
 wrapper.className="table-wrap";
 wrapper.appendChild(table);
@@ -467,7 +622,7 @@ container.appendChild(wrapper);
 
 async function loadUsers(){
  const container=document.getElementById("users");
- container.textContent="Loading users...";
+ showLoadingSkeleton(container,4);
 
  try{
   const response=await fetch("/api/admin/users",{
@@ -586,7 +741,7 @@ function renderActivity(){
 
 async function loadActivity(){
   const container=document.getElementById("activityLogs");
-  container.textContent="Loading security records...";
+  showLoadingSkeleton(container,3);
 
   try{
     const response=await fetch("/api/admin/activity",{
@@ -641,6 +796,21 @@ document.getElementById("logout").addEventListener("click",async()=>{
 ["userSearch","statusFilter","roleFilter"].forEach(id=>{
 const control=document.getElementById(id);
 control.addEventListener(id==="userSearch"?"input":"change",renderUsers);
+});
+
+
+document.querySelectorAll("[data-company-tab]").forEach(button => {
+  button.addEventListener("click", () => {
+    const selected = button.dataset.companyTab;
+    document.querySelectorAll("[data-company-tab]").forEach(tab => {
+      const active = tab.dataset.companyTab === selected;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-selected", String(active));
+    });
+    document.querySelectorAll("[data-company-panel]").forEach(panel => {
+      panel.classList.toggle("active", panel.dataset.companyPanel === selected);
+    });
+  });
 });
 
 loadAdmin();
