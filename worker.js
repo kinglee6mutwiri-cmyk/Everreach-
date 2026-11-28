@@ -1,3 +1,4 @@
+import { getCurrency } from "./currency-registry.js";
 const SESSION_SECONDS = 604800;
 
 function json(data, status = 200, headers = {}) {
@@ -201,8 +202,8 @@ async function api(request, env) {
       if (!/^[A-Z]{2}$/.test(countryCode))
         return json({error:"Enter a valid two-letter country code."},400);
 
-      if (!/^[A-Z]{3}$/.test(baseCurrency))
-        return json({error:"Enter a valid three-letter currency code."},400);
+      if (!getCurrency(baseCurrency))
+    return json({error:"Select a supported ISO 4217 currency."},400);
 
       if (registrationNumber.length > 100 || contactPhone.length > 40)
         return json({error:"Registration number or phone number is too long."},400);
