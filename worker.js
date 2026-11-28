@@ -420,7 +420,7 @@ async function api(request, env) {
           AND (? != 'approved' OR u.status = 'active')
         ORDER BY c.created_at DESC
         LIMIT 200
-      `).bind(status,status).all();
+      `).bind(status, status).all();
 
       return json({
         ok:true,
@@ -467,7 +467,7 @@ async function api(request, env) {
         WHERE id = ? AND verification_status = 'pending'
       `).bind(access.user.email,now,now,companyId).run();
 
-      if (!result.meta || result.meta.changes !== 1) {
+    if (!result.meta || result.meta.changes !== 1) {
         return json({error:"Application changed. Refresh and try again."},409);
       }
 
@@ -525,7 +525,7 @@ async function api(request, env) {
         WHERE id = ? AND verification_status = 'pending'
       `).bind(reason,access.user.email,now,now,companyId).run();
 
-      if (!result.meta || result.meta.changes !== 1) {
+    if (!result.meta || result.meta.changes !== 1) {
         return json({error:"Application changed. Refresh and try again."},409);
       }
 
